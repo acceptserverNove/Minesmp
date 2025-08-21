@@ -3,10 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>نظام طلبات NovamineSMP - الإصدار 3.0</title>
+    <title>نظام طلبات NovamineSMP - الطريقة الجديدة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -335,29 +332,40 @@
             background: var(--danger-color);
         }
         
-        .cache-warning {
-            background: #ffc107;
-            color: #856404;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-            text-align: center;
-        }
-        
-        .solution-steps {
+        .player-notification {
             background: #e9ecef;
             padding: 15px;
             border-radius: 10px;
             margin: 15px 0;
             text-align: right;
+            display: none;
         }
         
-        .solution-steps ol {
-            padding-right: 20px;
-        }
-        
-        .solution-steps li {
+        .player-notification h3 {
+            color: var(--primary-color);
             margin-bottom: 10px;
+        }
+        
+        .notification-code {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 18px;
+            letter-spacing: 2px;
+            margin: 10px 0;
+            direction: ltr;
+            text-align: center;
+        }
+        
+        .copy-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
         }
         
         @media (max-width: 768px) {
@@ -380,32 +388,11 @@
 </head>
 <body>
     <div class="container">
-        <!-- تحذير الكاش -->
-        <div class="cache-warning">
-            <i class="fas fa-exclamation-triangle"></i> 
-            <b>مهم:</b> إذا لم تظهر التعديلات للمستخدمين، اتبع الخطوات بالأسفل
-        </div>
-
-        <!-- خطوات الحل -->
-        <div class="solution-steps">
-            <h3><i class="fas fa-list-ol"></i> خطوات حل مشكلة عدم ظهور التعديلات:</h3>
-            <ol>
-                <li>اضغط على <kbd>Ctrl</kbd> + <kbd>F5</kbd> لتحديث الصفحة بشكل كامل</li>
-                <li>إذا لم تنجح الخطوة الأولى، اضغط على <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd></li>
-                <li>إذا استمرت المشكلة، امسح ذاكرة التخزين المؤقت للمتصفح</li>
-                <li>جرب فتح الموقع في متصفح آخر أو في نافذة خاصة</li>
-                <li>تأكد من أنك قمت بحفظ الملف بعد التعديلات</li>
-            </ol>
-            <button onclick="clearBrowserCache()" style="background: #856404; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px;">
-                <i class="fas fa-broom"></i> مسح ذاكرة التخزين المؤقت
-            </button>
-        </div>
-
         <!-- شاشة البداية -->
         <div id="start-box">
             <div class="header">
                 <h1><i class="fas fa-users-cog"></i> نظام طلبات NovamineSMP</h1>
-                <p>الإصدار 3.0 - تم التحديث في 10 ديسمبر 2023</p>
+                <p>الطريقة الجديدة - نظام الرموز الفريدة</p>
             </div>
             <h2>أهلاً بك 👋</h2>
             <p>اختر طريقة الدخول:</p>
@@ -445,6 +432,17 @@
                 <button onclick="addRequest()"><i class="fas fa-plus"></i> إضافة طلب</button>
             </div>
 
+            <!-- إشعار اللاعب -->
+            <div class="player-notification" id="playerNotification">
+                <h3><i class="fas fa-check-circle"></i> تم قبول طلب اللاعب</h3>
+                <p>يمكنك الآن إرسال رمز القبول التالي للاعب:</p>
+                <div class="notification-code" id="notificationCode">NVSMP-XXXX-XXXX</div>
+                <button class="copy-btn" onclick="copyCode()"><i class="fas fa-copy"></i> نسخ الرمز</button>
+                <p style="margin-top: 10px; font-size: 14px; color: #6c757d;">
+                    يمكن للاعب استخدام هذا الرمز للانضمام إلى السيرفر.
+                </p>
+            </div>
+
             <!-- صندوق البحث والتصفية -->
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="ابحث عن طلب..." onkeyup="filterRequests()">
@@ -466,41 +464,18 @@
     <div class="notification" id="notification">تمت العملية بنجاح!</div>
 
     <script>
-        // إضافة علامة زمنية لمنع التخزين المؤقت
-        const TIMESTAMP = new Date().getTime();
         const ADMIN_PASSWORD = "1357911"; // كلمة السر الافتراضية
         let isAdmin = false;
         let currentFilter = 'all';
         let requests = [
-            {name: "Ahmad", status: "pending", date: "2023-05-15"},
-            {name: "Ali", status: "pending", date: "2023-05-16"},
-            {name: "Mohammed", status: "accepted", date: "2023-05-10"},
-            {name: "Sara", status: "rejected", date: "2023-05-12"}
+            {name: "Ahmad", status: "pending", date: "2023-05-15", code: ""},
+            {name: "Ali", status: "pending", date: "2023-05-16", code: ""},
+            {name: "Mohammed", status: "accepted", date: "2023-05-10", code: "NVSMP-7B92-4C3A"},
+            {name: "Sara", status: "rejected", date: "2023-05-12", code: ""}
         ];
-
-        // مسح ذاكرة التخزين المؤقت للمتصفح
-        function clearBrowserCache() {
-            showNotification("جاري مسح ذاكرة التخزين المؤقت...", false);
-            
-            if ('caches' in window) {
-                caches.keys().then(function(names) {
-                    for (let name of names) {
-                        caches.delete(name);
-                    }
-                    showNotification("تم مسح ذاكرة التخزين المؤقت بنجاح", false);
-                    setTimeout(() => {
-                        window.location.reload(true);
-                    }, 1000);
-                });
-            } else {
-                showNotification("المتصفح لا يدعم هذه الميزة، جرب CTRL+F5", true);
-            }
-        }
 
         // تهيئة الصفحة عند التحميل
         function init() {
-            console.log("تم تحميل الإصدار: " + TIMESTAMP);
-            
             // تحميل البيانات من localStorage إذا وجدت
             const savedRequests = localStorage.getItem('novamine-requests');
             if (savedRequests) {
@@ -529,6 +504,38 @@
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 3000);
+        }
+
+        // إنشاء رمز فريد
+        function generateUniqueCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = 'NVSMP-';
+            for (let i = 0; i < 8; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+                if (i === 3) code += '-';
+            }
+            return code;
+        }
+
+        // عرض رمز القبول للاعب
+        function showPlayerCode(playerName, code) {
+            const notificationDiv = document.getElementById('playerNotification');
+            const codeDiv = document.getElementById('notificationCode');
+            
+            codeDiv.textContent = code;
+            notificationDiv.style.display = 'block';
+            
+            // تمرير المعلومات للوظائف الأخرى إذا لزم الأمر
+            window.currentPlayerCode = code;
+            window.currentPlayerName = playerName;
+        }
+
+        // نسخ الرمز
+        function copyCode() {
+            const code = document.getElementById('notificationCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                showNotification("تم نسخ الرمز: " + code);
+            });
         }
 
         // عرض الطلبات
@@ -569,15 +576,22 @@
                 const originalIndex = requests.findIndex(r => r.name === req.name && r.status === req.status);
                 const div = document.createElement("div");
                 div.className = "request-item";
+                
+                let codeInfo = "";
+                if (req.status === "accepted" && req.code) {
+                    codeInfo = `<p style="color: #28a745; margin-top: 5px;"><small>رمز الدخول: ${req.code}</small></p>`;
+                }
+                
                 div.innerHTML = `
                     <div class="request-info">
                         <h3>${req.name}</h3>
                         <p>تاريخ الطلب: ${req.date}</p>
+                        ${codeInfo}
                     </div>
                     <span class="status ${req.status}">${statusText(req.status)}</span>
                     <div class="request-actions">
                         ${isAdmin ? `
-                            <button class="accept-btn" onclick="changeStatus(${originalIndex},'accepted')"><i class="fas fa-check"></i> قبول</button>
+                            <button class="accept-btn" onclick="acceptRequest(${originalIndex})"><i class="fas fa-check"></i> قبول</button>
                             <button class="reject-btn" onclick="changeStatus(${originalIndex},'rejected')"><i class="fas fa-times"></i> رفض</button>
                             <button class="delete-btn" onclick="deleteRequest(${originalIndex})"><i class="fas fa-trash"></i> حذف</button>
                         ` : ''}
@@ -611,6 +625,7 @@
             document.getElementById("main-content").style.display = "block";
             document.getElementById("role").innerHTML = "<i class='fas fa-eye'></i> وضع الضيف (عرض فقط)";
             document.getElementById("admin-panel").style.display = "none";
+            document.getElementById("playerNotification").style.display = "none";
             renderRequests();
         }
 
@@ -622,6 +637,7 @@
                 document.getElementById("main-content").style.display = "block";
                 document.getElementById("role").innerHTML = "<i class='fas fa-crown'></i> مدير النظام (صلاحيات كاملة)";
                 document.getElementById("admin-panel").style.display = "block";
+                document.getElementById("playerNotification").style.display = "none";
                 renderRequests();
                 showNotification("تم تسجيل الدخول بنجاح كمدير");
             } else {
@@ -635,14 +651,33 @@
             document.getElementById("main-content").style.display = "none";
             document.getElementById("start-box").style.display = "block";
             document.getElementById("admin-panel").style.display = "none";
+            document.getElementById("playerNotification").style.display = "none";
             showNotification("تم تسجيل الخروج بنجاح");
+        }
+
+        // قبول الطلب وإنشاء رمز فريد
+        function acceptRequest(index) {
+            if (!isAdmin) return;
+            
+            const code = generateUniqueCode();
+            requests[index].status = "accepted";
+            requests[index].code = code;
+            
+            saveRequests();
+            renderRequests();
+            showPlayerCode(requests[index].name, code);
+            showNotification(`تم قبول طلب ${requests[index].name} وإنشاء رمز الدخول`);
         }
 
         function changeStatus(index, status) {
             if (!isAdmin) return;
             requests[index].status = status;
+            if (status !== "accepted") {
+                requests[index].code = "";
+            }
             saveRequests();
             renderRequests();
+            document.getElementById("playerNotification").style.display = "none";
             showNotification(`تم ${status === 'accepted' ? 'قبول' : 'رفض'} طلب ${requests[index].name}`);
         }
 
@@ -652,6 +687,7 @@
             requests.splice(index, 1);
             saveRequests();
             renderRequests();
+            document.getElementById("playerNotification").style.display = "none";
             showNotification(`تم حذف طلب ${playerName}`);
         }
 
@@ -674,7 +710,7 @@
             const today = new Date();
             const dateString = today.toISOString().split('T')[0];
             
-            requests.push({name: name, status: "pending", date: dateString});
+            requests.push({name: name, status: "pending", date: dateString, code: ""});
             nameInput.value = "";
             saveRequests();
             renderRequests();
@@ -698,17 +734,6 @@
         window.onload = function() {
             init();
         };
-
-        // إضافة علامة زمنية لجميع طلبات الموارد لمنع التخزين المؤقت
-        document.addEventListener('DOMContentLoaded', function() {
-            const links = document.querySelectorAll('link[rel="stylesheet"]');
-            links.forEach(link => {
-                const href = link.getAttribute('href');
-                if (href && href.indexOf('?') === -1) {
-                    link.setAttribute('href', href + '?v=' + TIMESTAMP);
-                }
-            });
-        });
     </script>
 </body>
 </html>
