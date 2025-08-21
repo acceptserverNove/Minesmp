@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام طلبات NovamineSMP - الإصدار النهائي</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>نظام طلبات NovamineSMP - الإصدار 3.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -339,7 +342,22 @@
             border-radius: 5px;
             margin: 10px 0;
             text-align: center;
-            display: none;
+        }
+        
+        .solution-steps {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: right;
+        }
+        
+        .solution-steps ol {
+            padding-right: 20px;
+        }
+        
+        .solution-steps li {
+            margin-bottom: 10px;
         }
         
         @media (max-width: 768px) {
@@ -363,18 +381,31 @@
 <body>
     <div class="container">
         <!-- تحذير الكاش -->
-        <div class="cache-warning" id="cacheWarning">
+        <div class="cache-warning">
             <i class="fas fa-exclamation-triangle"></i> 
-            إذا لم تظهر التعديلات، اضغط على 
-            <button onclick="clearCache()" style="background: #856404; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">CTRL + F5</button>
-            لتحديث الصفحة بشكل كامل
+            <b>مهم:</b> إذا لم تظهر التعديلات للمستخدمين، اتبع الخطوات بالأسفل
+        </div>
+
+        <!-- خطوات الحل -->
+        <div class="solution-steps">
+            <h3><i class="fas fa-list-ol"></i> خطوات حل مشكلة عدم ظهور التعديلات:</h3>
+            <ol>
+                <li>اضغط على <kbd>Ctrl</kbd> + <kbd>F5</kbd> لتحديث الصفحة بشكل كامل</li>
+                <li>إذا لم تنجح الخطوة الأولى، اضغط على <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd></li>
+                <li>إذا استمرت المشكلة، امسح ذاكرة التخزين المؤقت للمتصفح</li>
+                <li>جرب فتح الموقع في متصفح آخر أو في نافذة خاصة</li>
+                <li>تأكد من أنك قمت بحفظ الملف بعد التعديلات</li>
+            </ol>
+            <button onclick="clearBrowserCache()" style="background: #856404; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+                <i class="fas fa-broom"></i> مسح ذاكرة التخزين المؤقت
+            </button>
         </div>
 
         <!-- شاشة البداية -->
         <div id="start-box">
             <div class="header">
                 <h1><i class="fas fa-users-cog"></i> نظام طلبات NovamineSMP</h1>
-                <p>الإصدار النهائي - تم التحديث في 10 ديسمبر 2023</p>
+                <p>الإصدار 3.0 - تم التحديث في 10 ديسمبر 2023</p>
             </div>
             <h2>أهلاً بك 👋</h2>
             <p>اختر طريقة الدخول:</p>
@@ -435,8 +466,8 @@
     <div class="notification" id="notification">تمت العملية بنجاح!</div>
 
     <script>
-        // إضافة نسخة للكود لمنع التخزين المؤقت
-        const CODE_VERSION = "2.2_final";
+        // إضافة علامة زمنية لمنع التخزين المؤقت
+        const TIMESTAMP = new Date().getTime();
         const ADMIN_PASSWORD = "1357911"; // كلمة السر الافتراضية
         let isAdmin = false;
         let currentFilter = 'all';
@@ -447,29 +478,28 @@
             {name: "Sara", status: "rejected", date: "2023-05-12"}
         ];
 
-        // التحقق من وجود إصدار جديد
-        function checkForUpdates() {
-            const lastVersion = localStorage.getItem('novamine-version');
-            if (lastVersion !== CODE_VERSION) {
-                document.getElementById('cacheWarning').style.display = 'block';
-                localStorage.setItem('novamine-version', CODE_VERSION);
-                
-                // إشعار للمستخدم بوجود تحديث
-                showNotification("تم تحميل الإصدار الجديد من النظام!", false);
+        // مسح ذاكرة التخزين المؤقت للمتصفح
+        function clearBrowserCache() {
+            showNotification("جاري مسح ذاكرة التخزين المؤقت...", false);
+            
+            if ('caches' in window) {
+                caches.keys().then(function(names) {
+                    for (let name of names) {
+                        caches.delete(name);
+                    }
+                    showNotification("تم مسح ذاكرة التخزين المؤقت بنجاح", false);
+                    setTimeout(() => {
+                        window.location.reload(true);
+                    }, 1000);
+                });
+            } else {
+                showNotification("المتصفح لا يدعم هذه الميزة، جرب CTRL+F5", true);
             }
-        }
-
-        // مسح الكاش
-        function clearCache() {
-            localStorage.removeItem('novamine-requests');
-            localStorage.setItem('novamine-version', CODE_VERSION);
-            // إعادة تحميل الصفحة مع تجنب الكاش
-            window.location.reload(true);
         }
 
         // تهيئة الصفحة عند التحميل
         function init() {
-            checkForUpdates();
+            console.log("تم تحميل الإصدار: " + TIMESTAMP);
             
             // تحميل البيانات من localStorage إذا وجدت
             const savedRequests = localStorage.getItem('novamine-requests');
@@ -477,38 +507,12 @@
                 requests = JSON.parse(savedRequests);
             }
             
-            // محاولة تحميل البيانات من الخادم (محاكاة)
-            loadFromServer();
-        }
-
-        // محاكاة تحميل البيانات من الخادم
-        function loadFromServer() {
-            // هذه مجرد محاكاة - في التطبيق الحقيقي ستكون هناك طلبات AJAX
-            console.log("محاولة تحميل البيانات من الخادم...");
-            
-            // محاكاة التأخير
-            setTimeout(() => {
-                // في التطبيق الحقيقي، هنا سيتم تحميل البيانات من قاعدة البيانات
-                console.log("تم تحميل البيانات بنجاح");
-            }, 1000);
-        }
-
-        // محاكاة حفظ البيانات على الخادم
-        function saveToServer() {
-            // هذه مجرد محاكاة - في التطبيق الحقيقي ستكون هناك طلبات AJAX
-            console.log("جاري حفظ البيانات على الخادم...");
-            
-            // محاكاة التأخير
-            setTimeout(() => {
-                // في التطبيق الحقيقي، هنا سيتم حفظ البيانات في قاعدة البيانات
-                console.log("تم حفظ البيانات على الخادم بنجاح");
-            }, 1000);
+            renderRequests();
         }
 
         // حفظ البيانات في localStorage
         function saveRequests() {
             localStorage.setItem('novamine-requests', JSON.stringify(requests));
-            saveToServer(); // محاكاة حفظ على الخادم
         }
 
         // عرض الإشعارات
@@ -693,28 +697,18 @@
         // تهيئة التطبيق عند تحميل الصفحة
         window.onload = function() {
             init();
-            renderRequests();
-            
-            // إضافة علامة تحميل البيانات من الخادم
-            console.log("تم تحميل النظام بنجاح - الإصدار: " + CODE_VERSION);
         };
 
-        // منع التخزين المؤقت للصفحة
-        window.onbeforeunload = function() {
-            // هذه مجرد محاكاة لطلب من الخادم
-            console.log("جاري حفظ التغييرات النهائية...");
-        };
-
-        // إضافة دالة للتحميل من الخادم (محاكاة)
-        function forceReloadFromServer() {
-            showNotification("جاري تحميل أحدث البيانات من الخادم...", false);
-            
-            // محاكاة الاتصال بالخادم
-            setTimeout(() => {
-                renderRequests();
-                showNotification("تم تحميل أحدث البيانات بنجاح", false);
-            }, 1500);
-        }
+        // إضافة علامة زمنية لجميع طلبات الموارد لمنع التخزين المؤقت
+        document.addEventListener('DOMContentLoaded', function() {
+            const links = document.querySelectorAll('link[rel="stylesheet"]');
+            links.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && href.indexOf('?') === -1) {
+                    link.setAttribute('href', href + '?v=' + TIMESTAMP);
+                }
+            });
+        });
     </script>
 </body>
 </html>
