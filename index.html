@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام طلبات NovamineSMP</title>
+    <title>نظام طلبات NovamineSMP - الإصدار 2.1</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -337,6 +337,16 @@
             background: var(--danger-color);
         }
         
+        .cache-warning {
+            background: #ffc107;
+            color: #856404;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+            display: none;
+        }
+        
         @media (max-width: 768px) {
             .request-item {
                 flex-direction: column;
@@ -357,11 +367,19 @@
 </head>
 <body>
     <div class="container">
+        <!-- تحذير الكاش -->
+        <div class="cache-warning" id="cacheWarning">
+            <i class="fas fa-exclamation-triangle"></i> 
+            إذا لم تظهر التعديلات، اضغط على 
+            <button onclick="clearCache()" style="background: #856404; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">CTRL + F5</button>
+            لتحديث الصفحة بشكل كامل
+        </div>
+
         <!-- شاشة البداية -->
         <div id="start-box">
             <div class="header">
                 <h1><i class="fas fa-users-cog"></i> نظام طلبات NovamineSMP</h1>
-                <p>مرحباً بك في نظام إدارة طلبات الانضمام للسيرفر</p>
+                <p>الإصدار 2.1 - تم التحديث في 10 ديسمبر 2025</p>
             </div>
             <h2>أهلاً بك 👋</h2>
             <p>اختر طريقة الدخول:</p>
@@ -422,6 +440,8 @@
     <div class="notification" id="notification">تمت العملية بنجاح!</div>
 
     <script>
+        // إضافة نسخة للكود لمنع التخزين المؤقت
+        const CODE_VERSION = "2.1";
         const ADMIN_PASSWORD = "1357911"; // كلمة السر الافتراضية
         let isAdmin = false;
         let currentFilter = 'all';
@@ -432,8 +452,26 @@
             {name: "Sara", status: "rejected", date: "2023-05-12"}
         ];
 
+        // التحقق من وجود إصدار جديد
+        function checkForUpdates() {
+            const lastVersion = localStorage.getItem('novamine-version');
+            if (lastVersion !== CODE_VERSION) {
+                document.getElementById('cacheWarning').style.display = 'block';
+                localStorage.setItem('novamine-version', CODE_VERSION);
+            }
+        }
+
+        // مسح الكاش
+        function clearCache() {
+            localStorage.removeItem('novamine-requests');
+            localStorage.setItem('novamine-version', CODE_VERSION);
+            window.location.reload(true);
+        }
+
         // تهيئة الصفحة عند التحميل
         function init() {
+            checkForUpdates();
+            
             // تحميل البيانات من localStorage إذا وجدت
             const savedRequests = localStorage.getItem('novamine-requests');
             if (savedRequests) {
@@ -628,6 +666,7 @@
         // تهيئة التطبيق عند تحميل الصفحة
         window.onload = function() {
             init();
+            renderRequests();
         };
     </script>
 </body>
