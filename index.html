@@ -1,243 +1,634 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نظام طلبات NovamineSMP</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: "Cairo", Arial, sans-serif;
-      background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-    .container {
-      width: 100%;
-      max-width: 900px;
-      background: white;
-      border-radius: 15px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-      overflow: hidden;
-      padding: 20px;
-      text-align: center;
-    }
-    .header {
-      background: linear-gradient(to right, #870790, #6a066a);
-      color: white;
-      padding: 25px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-    }
-    .request-item {
-      background: #f8f9fa;
-      border-radius: 10px;
-      padding: 20px;
-      margin-bottom: 15px;
-      text-align: right;
-      position: relative;
-    }
-    .status {
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-weight: bold;
-      display: inline-block;
-    }
-    .status.accepted { background: #e0f7ea; color: #28a745; }
-    .status.rejected { background: #fde8e8; color: #dc3545; }
-    .status.pending  { background: #fff4e0; color: #ffc107; }
-    .actions { margin-top: 15px; display: none; }
-    .actions button {
-      padding: 8px 15px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      color: white;
-      font-weight: bold;
-      margin-left: 5px;
-    }
-    .accept-btn { background: #28a745; }
-    .reject-btn { background: #dc3545; }
-    .delete-btn { background: #444; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام طلبات NovamineSMP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6a11cb;
+            --secondary-color: #2575fc;
+            --accent-color: #ff6b6b;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .header {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(30deg);
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header p {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .request-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            text-align: right;
+            position: relative;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .request-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .request-info {
+            flex: 1;
+            text-align: right;
+        }
+        
+        .request-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            font-size: 14px;
+        }
+        
+        .status.accepted { 
+            background: #e0f7ea; 
+            color: #28a745; 
+            border-left-color: #28a745;
+        }
+        
+        .status.rejected { 
+            background: #fde8e8; 
+            color: #dc3545; 
+            border-left-color: #dc3545;
+        }
+        
+        .status.pending  { 
+            background: #fff4e0; 
+            color: #ffc107; 
+            border-left-color: #ffc107;
+        }
+        
+        .actions { 
+            margin-top: 15px; 
+            display: none; 
+        }
+        
+        .actions button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            margin-left: 5px;
+            transition: all 0.2s ease;
+        }
+        
+        .actions button:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+        
+        .accept-btn { background: var(--success-color); }
+        .reject-btn { background: var(--danger-color); }
+        .delete-btn { background: var(--dark-color); }
 
-    /* أزرار البداية */
-    #start-box button {
-      padding: 10px 20px;
-      margin: 10px;
-      background: #870790;
-      border: none;
-      color: white;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    #login-box { display: none; }
-    #login-box input {
-      padding: 10px;
-      margin: 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      width: 200px;
-    }
-    #login-box button { background: #6a066a; color:white; }
+        /* أزرار البداية */
+        #start-box {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        #start-box button {
+            padding: 12px 25px;
+            margin: 10px;
+            background: var(--primary-color);
+            border: none;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            width: 250px;
+        }
+        
+        #start-box button:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        #login-box { 
+            display: none; 
+            text-align: center;
+            padding: 20px;
+        }
+        
+        #login-box input {
+            padding: 12px;
+            margin: 10px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            width: 250px;
+            transition: all 0.3s ease;
+        }
+        
+        #login-box input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.2);
+            outline: none;
+        }
+        
+        #login-box button { 
+            background: var(--primary-color); 
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            width: 250px;
+        }
+        
+        #login-box button:hover {
+            background: var(--secondary-color);
+        }
 
-    /* لوحة الإدارة */
-    #admin-panel {
-      display: none;
-      margin-bottom: 20px;
-      text-align: right;
-      border: 1px solid #ddd;
-      padding: 15px;
-      border-radius: 10px;
-      background: #f8f9fa;
-    }
-    #admin-panel input {
-      padding: 10px;
-      margin: 5px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-    #admin-panel button {
-      padding: 8px 15px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      background: #870790;
-      color: white;
-    }
-  </style>
+        /* لوحة الإدارة */
+        #admin-panel {
+            display: none;
+            margin-bottom: 20px;
+            text-align: right;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+        
+        #admin-panel input {
+            padding: 12px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            width: 250px;
+            transition: all 0.3s ease;
+        }
+        
+        #admin-panel input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.2);
+            outline: none;
+        }
+        
+        #admin-panel button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            background: var(--primary-color);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        #admin-panel button:hover {
+            background: var(--secondary-color);
+        }
+        
+        .search-box {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .search-box input {
+            padding: 12px;
+            width: 300px;
+            border-radius: 30px;
+            border: 1px solid #ddd;
+            text-align: right;
+            transition: all 0.3s ease;
+        }
+        
+        .search-box input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.2);
+            outline: none;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .filter-buttons button {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-buttons button.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .filter-buttons button:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .no-requests {
+            text-align: center;
+            padding: 30px;
+            color: #6c757d;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            background: var(--success-color);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.error {
+            background: var(--danger-color);
+        }
+        
+        @media (max-width: 768px) {
+            .request-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .request-actions {
+                margin-top: 15px;
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .search-box input {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
+    <div class="container">
+        <!-- شاشة البداية -->
+        <div id="start-box">
+            <div class="header">
+                <h1><i class="fas fa-users-cog"></i> نظام طلبات NovamineSMP</h1>
+                <p>مرحباً بك في نظام إدارة طلبات الانضمام للسيرفر</p>
+            </div>
+            <h2>أهلاً بك 👋</h2>
+            <p>اختر طريقة الدخول:</p>
+            <button onclick="enterAsGuest()"><i class="fas fa-eye"></i> دخول كضيف (عرض فقط)</button>
+            <button onclick="showLogin()"><i class="fas fa-key"></i> دخول كمدير</button>
+        </div>
 
-    <!-- شاشة البداية -->
-    <div id="start-box">
-      <h2>أهلاً بك 👋</h2>
-      <p>اختر طريقة الدخول:</p>
-      <button onclick="enterAsGuest()">👀 دخول كضيف (عرض فقط)</button>
-      <button onclick="showLogin()">🔑 دخول كمدير</button>
+        <!-- تسجيل الدخول للمدير -->
+        <div id="login-box">
+            <div class="header">
+                <h1><i class="fas fa-users-cog"></i> نظام طلبات NovamineSMP</h1>
+                <p>تسجيل دخول المدير</p>
+            </div>
+            <input type="password" id="password" placeholder="كلمة السر">
+            <br>
+            <button onclick="login()"><i class="fas fa-sign-in-alt"></i> دخول</button>
+            <button onclick="backToStart()"><i class="fas fa-arrow-right"></i> رجوع</button>
+            <p id="error" style="color:red; display:none; margin-top: 15px;">
+                <i class="fas fa-exclamation-circle"></i> كلمة السر غير صحيحة!
+            </p>
+        </div>
+
+        <!-- المحتوى الأساسي -->
+        <div id="main-content" style="display:none;">
+            <div class="header">
+                <h1><i class="fas fa-users-cog"></i> نظام طلبات NovamineSMP</h1>
+                <p id="role"></p>
+                <button onclick="logout()" style="position: absolute; left: 20px; top: 20px; background: rgba(255,255,255,0.2); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">
+                    <i class="fas fa-sign-out-alt"></i> خروج
+                </button>
+            </div>
+
+            <!-- لوحة الإدارة (للمدير فقط) -->
+            <div id="admin-panel">
+                <h3><i class="fas fa-cogs"></i> لوحة الإدارة</h3>
+                <input type="text" id="playerName" placeholder="اسم اللاعب الجديد">
+                <button onclick="addRequest()"><i class="fas fa-plus"></i> إضافة طلب</button>
+            </div>
+
+            <!-- صندوق البحث والتصفية -->
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="ابحث عن طلب..." onkeyup="filterRequests()">
+            </div>
+            
+            <div class="filter-buttons">
+                <button class="active" onclick="changeFilter('all')">جميع الطلبات</button>
+                <button onclick="changeFilter('pending')">قيد المراجعة</button>
+                <button onclick="changeFilter('accepted')">مقبولة</button>
+                <button onclick="changeFilter('rejected')">مرفوضة</button>
+            </div>
+
+            <div id="requests-list">
+                <!-- الطلبات سيتم عرضها هنا -->
+            </div>
+        </div>
     </div>
 
-    <!-- تسجيل الدخول للمدير -->
-    <div id="login-box">
-      <h2>تسجيل دخول المدير</h2>
-      <input type="password" id="password" placeholder="كلمة السر">
-      <br>
-      <button onclick="login()">دخول</button>
-      <p id="error" style="color:red; display:none;">كلمة السر غير صحيحة!</p>
-    </div>
+    <div class="notification" id="notification">تمت العملية بنجاح!</div>
 
-    <!-- المحتوى الأساسي -->
-    <div id="main-content" style="display:none;">
-      <div class="header">
-        <h1><i class="fas fa-users-cog"></i> نظام طلبات NovamineSMP</h1>
-        <p id="role"></p>
-      </div>
+    <script>
+        const ADMIN_PASSWORD = "1357911"; // كلمة السر الافتراضية
+        let isAdmin = false;
+        let currentFilter = 'all';
+        let requests = [
+            {name: "Ahmad", status: "pending", date: "2023-05-15"},
+            {name: "Ali", status: "pending", date: "2023-05-16"},
+            {name: "Mohammed", status: "accepted", date: "2023-05-10"},
+            {name: "Sara", status: "rejected", date: "2023-05-12"}
+        ];
 
-      <!-- لوحة الإدارة (للمدير فقط) -->
-      <div id="admin-panel">
-        <h3>لوحة الإدارة</h3>
-        <input type="text" id="playerName" placeholder="اسم اللاعب الجديد">
-        <button onclick="addRequest()">➕ إضافة طلب</button>
-      </div>
+        // تهيئة الصفحة عند التحميل
+        function init() {
+            // تحميل البيانات من localStorage إذا وجدت
+            const savedRequests = localStorage.getItem('novamine-requests');
+            if (savedRequests) {
+                requests = JSON.parse(savedRequests);
+            }
+        }
 
-      <div id="requests-list">
-        <!-- الطلبات هتكون هنا -->
-      </div>
-    </div>
+        // حفظ البيانات في localStorage
+        function saveRequests() {
+            localStorage.setItem('novamine-requests', JSON.stringify(requests));
+        }
 
-  </div>
+        // عرض الإشعارات
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            if (isError) {
+                notification.classList.add('error');
+            } else {
+                notification.classList.remove('error');
+            }
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
 
-  <script>
-    const ADMIN_PASSWORD = "1357911"; // غيرها بكلمة السر اللي تحبها
-    let isAdmin = false;
-    let requests = [
-      {name: "Ahmad", status: "pending"},
-      {name: "Ali", status: "pending"}
-    ];
+        // عرض الطلبات
+        function renderRequests() {
+            const container = document.getElementById("requests-list");
+            container.innerHTML = "";
+            
+            // تصفية الطلبات حسب البحث والنوع
+            let filteredRequests = requests;
+            
+            // التصفية حسب النوع
+            if (currentFilter !== 'all') {
+                filteredRequests = filteredRequests.filter(req => req.status === currentFilter);
+            }
+            
+            // التصفية حسب البحث
+            const searchText = document.getElementById("searchInput").value.toLowerCase();
+            if (searchText) {
+                filteredRequests = filteredRequests.filter(req => 
+                    req.name.toLowerCase().includes(searchText)
+                );
+            }
+            
+            // إذا لم يكن هناك طلبات
+            if (filteredRequests.length === 0) {
+                container.innerHTML = `
+                    <div class="no-requests">
+                        <i class="fas fa-inbox" style="font-size: 50px; margin-bottom: 15px;"></i>
+                        <h3>لا توجد طلبات</h3>
+                        <p>لم يتم العثور على أي طلبات تناسب معايير البحث</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // عرض الطلبات
+            filteredRequests.forEach((req, index) => {
+                const originalIndex = requests.findIndex(r => r.name === req.name && r.status === req.status);
+                const div = document.createElement("div");
+                div.className = "request-item";
+                div.innerHTML = `
+                    <div class="request-info">
+                        <h3>${req.name}</h3>
+                        <p>تاريخ الطلب: ${req.date}</p>
+                    </div>
+                    <span class="status ${req.status}">${statusText(req.status)}</span>
+                    <div class="request-actions">
+                        ${isAdmin ? `
+                            <button class="accept-btn" onclick="changeStatus(${originalIndex},'accepted')"><i class="fas fa-check"></i> قبول</button>
+                            <button class="reject-btn" onclick="changeStatus(${originalIndex},'rejected')"><i class="fas fa-times"></i> رفض</button>
+                            <button class="delete-btn" onclick="deleteRequest(${originalIndex})"><i class="fas fa-trash"></i> حذف</button>
+                        ` : ''}
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
 
-    function renderRequests() {
-      const container = document.getElementById("requests-list");
-      container.innerHTML = "";
-      requests.forEach((req, index) => {
-        const div = document.createElement("div");
-        div.className = "request-item";
-        div.innerHTML = `
-          <h3>طلب انضمام اللاعب: ${req.name}</h3>
-          <span class="status ${req.status}">${statusText(req.status)}</span>
-          <div class="actions">
-            <button class="accept-btn" onclick="changeStatus(${index},'accepted')">قبول</button>
-            <button class="reject-btn" onclick="changeStatus(${index},'rejected')">رفض</button>
-            <button class="delete-btn" onclick="deleteRequest(${index})">حذف</button>
-          </div>
-        `;
-        container.appendChild(div);
-      });
-      if (isAdmin) {
-        document.querySelectorAll(".actions").forEach(el => el.style.display = "block");
-      }
-    }
+        function statusText(st) {
+            if (st === "accepted") return "مقبول";
+            if (st === "rejected") return "مرفوض";
+            return "قيد المراجعة";
+        }
 
-    function statusText(st) {
-      if (st === "accepted") return "مقبول";
-      if (st === "rejected") return "مرفوض";
-      return "قيد المراجعة";
-    }
+        function showLogin() {
+            document.getElementById("start-box").style.display = "none";
+            document.getElementById("login-box").style.display = "block";
+        }
 
-    function showLogin() {
-      document.getElementById("start-box").style.display = "none";
-      document.getElementById("login-box").style.display = "block";
-    }
+        function backToStart() {
+            document.getElementById("login-box").style.display = "none";
+            document.getElementById("start-box").style.display = "block";
+            document.getElementById("error").style.display = "none";
+            document.getElementById("password").value = "";
+        }
 
-    function enterAsGuest() {
-      isAdmin = false;
-      document.getElementById("start-box").style.display = "none";
-      document.getElementById("main-content").style.display = "block";
-      document.getElementById("role").innerText = "وضع الضيف (عرض فقط)";
-      document.getElementById("admin-panel").style.display = "none";
-      renderRequests();
-    }
+        function enterAsGuest() {
+            isAdmin = false;
+            document.getElementById("start-box").style.display = "none";
+            document.getElementById("main-content").style.display = "block";
+            document.getElementById("role").innerHTML = "<i class='fas fa-eye'></i> وضع الضيف (عرض فقط)";
+            document.getElementById("admin-panel").style.display = "none";
+            renderRequests();
+        }
 
-    function login() {
-      const pass = document.getElementById("password").value;
-      if (pass === ADMIN_PASSWORD) {
-        isAdmin = true;
-        document.getElementById("login-box").style.display = "none";
-        document.getElementById("main-content").style.display = "block";
-        document.getElementById("role").innerText = "مدير النظام (صلاحيات كاملة)";
-        document.getElementById("admin-panel").style.display = "block";
-        renderRequests();
-      } else {
-        document.getElementById("error").style.display = "block";
-      }
-    }
+        function login() {
+            const pass = document.getElementById("password").value;
+            if (pass === ADMIN_PASSWORD) {
+                isAdmin = true;
+                document.getElementById("login-box").style.display = "none";
+                document.getElementById("main-content").style.display = "block";
+                document.getElementById("role").innerHTML = "<i class='fas fa-crown'></i> مدير النظام (صلاحيات كاملة)";
+                document.getElementById("admin-panel").style.display = "block";
+                renderRequests();
+                showNotification("تم تسجيل الدخول بنجاح كمدير");
+            } else {
+                document.getElementById("error").style.display = "block";
+                showNotification("كلمة السر غير صحيحة!", true);
+            }
+        }
 
-    function changeStatus(index, status) {
-      if (!isAdmin) return;
-      requests[index].status = status;
-      renderRequests();
-    }
+        function logout() {
+            isAdmin = false;
+            document.getElementById("main-content").style.display = "none";
+            document.getElementById("start-box").style.display = "block";
+            document.getElementById("admin-panel").style.display = "none";
+            showNotification("تم تسجيل الخروج بنجاح");
+        }
 
-    function deleteRequest(index) {
-      if (!isAdmin) return;
-      requests.splice(index, 1);
-      renderRequests();
-    }
+        function changeStatus(index, status) {
+            if (!isAdmin) return;
+            requests[index].status = status;
+            saveRequests();
+            renderRequests();
+            showNotification(`تم ${status === 'accepted' ? 'قبول' : 'رفض'} طلب ${requests[index].name}`);
+        }
 
-    function addRequest() {
-      if (!isAdmin) return;
-      const name = document.getElementById("playerName").value.trim();
-      if (name) {
-        requests.push({name: name, status: "pending"});
-        document.getElementById("playerName").value = "";
-        renderRequests();
-      }
-    }
-  </script>
+        function deleteRequest(index) {
+            if (!isAdmin) return;
+            const playerName = requests[index].name;
+            requests.splice(index, 1);
+            saveRequests();
+            renderRequests();
+            showNotification(`تم حذف طلب ${playerName}`);
+        }
+
+        function addRequest() {
+            if (!isAdmin) return;
+            const nameInput = document.getElementById("playerName");
+            const name = nameInput.value.trim();
+            
+            if (!name) {
+                showNotification("يرجى إدخال اسم اللاعب", true);
+                return;
+            }
+            
+            // التحقق من عدم وجود طلب بنفس الاسم
+            if (requests.some(req => req.name.toLowerCase() === name.toLowerCase())) {
+                showNotification("هذا اللاعب لديه طلب مسبقاً", true);
+                return;
+            }
+            
+            const today = new Date();
+            const dateString = today.toISOString().split('T')[0];
+            
+            requests.push({name: name, status: "pending", date: dateString});
+            nameInput.value = "";
+            saveRequests();
+            renderRequests();
+            showNotification(`تم إضافة طلب جديد للاعب ${name}`);
+        }
+
+        function filterRequests() {
+            renderRequests();
+        }
+
+        function changeFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-buttons button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            renderRequests();
+        }
+
+        // تهيئة التطبيق عند تحميل الصفحة
+        window.onload = function() {
+            init();
+        };
+    </script>
 </body>
 </html>
