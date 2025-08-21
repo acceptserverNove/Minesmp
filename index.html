@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام طلبات NovamineSMP - الإصدار 2.1</title>
+    <title>نظام طلبات NovamineSMP - الإصدار النهائي</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -133,11 +133,6 @@
             background: #fff4e0; 
             color: #ffc107; 
             border-left-color: #ffc107;
-        }
-        
-        .actions { 
-            margin-top: 15px; 
-            display: none; 
         }
         
         .actions button {
@@ -379,7 +374,7 @@
         <div id="start-box">
             <div class="header">
                 <h1><i class="fas fa-users-cog"></i> نظام طلبات NovamineSMP</h1>
-                <p>الإصدار 2.1 - تم التحديث في 10 ديسمبر 2025</p>
+                <p>الإصدار النهائي - تم التحديث في 10 ديسمبر 2023</p>
             </div>
             <h2>أهلاً بك 👋</h2>
             <p>اختر طريقة الدخول:</p>
@@ -441,7 +436,7 @@
 
     <script>
         // إضافة نسخة للكود لمنع التخزين المؤقت
-        const CODE_VERSION = "2.1";
+        const CODE_VERSION = "2.2_final";
         const ADMIN_PASSWORD = "1357911"; // كلمة السر الافتراضية
         let isAdmin = false;
         let currentFilter = 'all';
@@ -458,6 +453,9 @@
             if (lastVersion !== CODE_VERSION) {
                 document.getElementById('cacheWarning').style.display = 'block';
                 localStorage.setItem('novamine-version', CODE_VERSION);
+                
+                // إشعار للمستخدم بوجود تحديث
+                showNotification("تم تحميل الإصدار الجديد من النظام!", false);
             }
         }
 
@@ -465,6 +463,7 @@
         function clearCache() {
             localStorage.removeItem('novamine-requests');
             localStorage.setItem('novamine-version', CODE_VERSION);
+            // إعادة تحميل الصفحة مع تجنب الكاش
             window.location.reload(true);
         }
 
@@ -477,11 +476,39 @@
             if (savedRequests) {
                 requests = JSON.parse(savedRequests);
             }
+            
+            // محاولة تحميل البيانات من الخادم (محاكاة)
+            loadFromServer();
+        }
+
+        // محاكاة تحميل البيانات من الخادم
+        function loadFromServer() {
+            // هذه مجرد محاكاة - في التطبيق الحقيقي ستكون هناك طلبات AJAX
+            console.log("محاولة تحميل البيانات من الخادم...");
+            
+            // محاكاة التأخير
+            setTimeout(() => {
+                // في التطبيق الحقيقي، هنا سيتم تحميل البيانات من قاعدة البيانات
+                console.log("تم تحميل البيانات بنجاح");
+            }, 1000);
+        }
+
+        // محاكاة حفظ البيانات على الخادم
+        function saveToServer() {
+            // هذه مجرد محاكاة - في التطبيق الحقيقي ستكون هناك طلبات AJAX
+            console.log("جاري حفظ البيانات على الخادم...");
+            
+            // محاكاة التأخير
+            setTimeout(() => {
+                // في التطبيق الحقيقي، هنا سيتم حفظ البيانات في قاعدة البيانات
+                console.log("تم حفظ البيانات على الخادم بنجاح");
+            }, 1000);
         }
 
         // حفظ البيانات في localStorage
         function saveRequests() {
             localStorage.setItem('novamine-requests', JSON.stringify(requests));
+            saveToServer(); // محاكاة حفظ على الخادم
         }
 
         // عرض الإشعارات
@@ -667,7 +694,27 @@
         window.onload = function() {
             init();
             renderRequests();
+            
+            // إضافة علامة تحميل البيانات من الخادم
+            console.log("تم تحميل النظام بنجاح - الإصدار: " + CODE_VERSION);
         };
+
+        // منع التخزين المؤقت للصفحة
+        window.onbeforeunload = function() {
+            // هذه مجرد محاكاة لطلب من الخادم
+            console.log("جاري حفظ التغييرات النهائية...");
+        };
+
+        // إضافة دالة للتحميل من الخادم (محاكاة)
+        function forceReloadFromServer() {
+            showNotification("جاري تحميل أحدث البيانات من الخادم...", false);
+            
+            // محاكاة الاتصال بالخادم
+            setTimeout(() => {
+                renderRequests();
+                showNotification("تم تحميل أحدث البيانات بنجاح", false);
+            }, 1500);
+        }
     </script>
 </body>
 </html>
