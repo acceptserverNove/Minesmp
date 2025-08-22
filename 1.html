@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سيرفر ماين كرافت | Minecraft Server</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --main-color: #8e44ad;  /* تغيير اللون إلى بنفسجي */
+            --dark-color: #6c3483;
+            --light-color: #b795db;
+            --background: #1a1a1a;
+            --text-color: #f1f1f1;
+            --card-bg: #2d2d2d;
+            --hover-effect: #9b59b6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--text-color);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* القائمة الجانبية */
+        .sidebar {
+            width: 280px;
+            background-color: var(--card-bg);
+            padding: 20px;
+            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.5);
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+        }
+        
+        .server-info {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 2px solid var(--main-color);
+            margin-bottom: 20px;
+        }
+        
+        .server-info img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid var(--main-color);
+            object-fit: cover;
+            margin-bottom: 15px;
+        }
+        
+        .server-info h2 {
+            color: var(--main-color);
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .server-ip {
+            background-color: var(--dark-color);
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .server-ip:hover {
+            background-color: var(--hover-effect);
+        }
+        
+        .menu-title {
+            color: var(--main-color);
+            margin: 25px 0 15px;
+            padding-right: 10px;
+            border-right: 3px solid var(--main-color);
+        }
+        
+        .menu-items {
+            list-style: none;
+        }
+        
+        .menu-items li {
+            margin-bottom: 10px;
+        }
+        
+        .menu-items a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .menu-items a:hover, .menu-items a.active {
+            background-color: var(--main-color);
+            transform: translateX(-5px);
+        }
+        
+        .menu-items i {
+            margin-left: 10px;
+            font-size: 1.2rem;
+        }
+        
+        /* المحتوى الرئيسي */
+        .main-content {
+            flex: 1;
+            margin-right: 280px;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #444;
+        }
+        
+        .header-title {
+            color: var(--main-color);
+            font-size: 2rem;
+        }
+        
+        /* أقسام المحتوى */
+        .content-section {
+            display: none;
+            margin-bottom: 30px;
+        }
+        
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .section-title {
+            color: var(--main-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--main-color);
+        }
+        
+        /* بطاقات المحتوى */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 2px solid var(--main-color);
+        }
+        
+        .card-content {
+            padding: 15px;
+        }
+        
+        .card-title {
+            color: var(--main-color);
+            margin-bottom: 10px;
+        }
+        
+        .card-desc {
+            color: #ccc;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        /* التكيف مع الشاشات الصغيرة */
+        @media (max-width: 992px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                margin-bottom: 20px;
+            }
+            
+            .main-content {
+                margin-right: 0;
+            }
+            
+            .server-info {
+                display: flex;
+                align-items: center;
+                text-align: right;
+            }
+            
+            .server-info img {
+                margin-left: 20px;
+                margin-bottom: 0;
+                width: 70px;
+                height: 70px;
+            }
+            
+            .menu-items a {
+                justify-content: flex-end;
+            }
+            
+            .menu-items a:hover, .menu-items a.active {
+                transform: translateX(5px);
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .header-title {
+                font-size: 1.5rem;
+            }
+            
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .server-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .server-info img {
+                margin-left: 0;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- القائمة الجانبية -->
+    <aside class="sidebar">
+        <div class="server-info">
+            <img src="novaminesmp.png" alt="Server Logo" id="serverLogo">
+            <h2>سيرفر NovaMineSMP</h2>
+            <p>مرحبًا بك في قبول الرتب في سيرفير!</p>
+            <div class="server-ip" onclick="copyIP()">NovaMineSMP.aternos.me<i class="fas fa-copy"></i></div>
+        </div>
+        
+        <h3 class="menu-title">القائمة الرئيسية</h3>
+        <ul class="menu-items">
+            <li><a href="#" data-section="builder" class="active"><i class="fas fa-hammer"></i> Builder</a></li>
+            <li><a href="#" data-section="youtube"><i class="fab fa-youtube"></i> YouTube</a></li>
+            <li><a href="#" data-section="staff"><i class="fas fa-users"></i> Staff</a></li>
+        </ul>
+    </aside>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="main-content">
+        <header>
+            <h1 class="header-title" id="sectionHeader">Builder</h1>
+        </header>
+        
+        <!-- قسم البنائين -->
+        <section id="builder" class="content-section active">
+            <h2 class="section-title">إبداعات البنائين</h2>
+            <p>هنا يمكنك مشاهدة أروع الإبداعات والتصاميم التي ينشئها البناؤون في سيرفرنا.</p>
+            
+            <div class="cards-container">
+                <div class="card">
+                    <img src="https://via.placeholder.com/400x200?text=Build+1" alt="بناء 1" class="card-img">
+                    <div class="card-content">
+                        <h3 class="card-title">قلعة رائعة</h3>
+                        <p class="card-desc">قلعة مذهلة بناها اللاعب أحمد، استغرق بناؤها 3 أسابيع.</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <img src="https://via.placeholder.com/400x200?text=Build+2" alt="بناء 2" class="card-img">
+                    <div class="card-content">
+                        <h3 class="card-title">مدينة حديثة</h3>
+                        <p class="card-desc">مدينة كاملة بمبانيها وطرقها، أنشأها فريق من البنائين.</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <img src="https://via.placeholder.com/400x200?text=Build+3" alt="بناء 3" class="card-img">
+                    <div class="card-content">
+                        <h3 class="card-title">معبد قديم</h3>
+                        <p class="card-desc">معبد قديم من حضارة منسية، تم بناؤه بدقة متناهية.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <img src="https://via.placeholder.com/400x200?text=Build+4" alt="بناء 4" class="card-img">
+                    <div class="card-content">
+                        <h3 class="card-title">قلعة التنين</h3>
+                        <p class="card-desc">قلعة أسطورية على قمة جبل، محاطة بالغيوم والتنانين.</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <img src="https://via.placeholder.com/400x200?text=Build+5" alt="بناء 5" class="card-img">
+                    <div class="card-content">
+                        <h3 class="card-title">القرية السحرية</h3>
+                        <p class="card-desc">قرية صغيرة بسحر خاص، مليئة بالتفاصيل الجميلة.</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <img src="https://via.placeholder.com/400x200?text=Build+6" alt="بناء 6" class="card-img">
+                    <div class="card-content">
+                        <h3 class="card-title">الهرم العظيم</h3>
+                        <p class="card-desc">نسخة طبق الأصل من الهرم الأكبر بالجيزة بدقة عالية.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- قسم اليوتيوب -->
+        <section id="youtube" class="content-section">
+            <h2 class="section-title">مقاطع اليوتيوب</h2>
+            <p>هنا يمكنك مشاهدة أفضل مقاطع الفيديو المسجلة من سيرفرنا على اليوتيوب.</p>
+            
+            <div class="cards-container">
+                <div class="card">
+                    <img src="https://via.placeholder.com/400x200?text=YouTube+Video+1" alt="فيديو 1" class="card-img">
+                    <div class="card-content">
+                        <h3 class="card-title">جولة في السيرفر</h3>
+                        <p class="card-desc">جولة كاملة في سيرفرنا تستعرض أهم الأماكن والميزات.</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <img src="https://via.placeholder.com/400x200?text=YouTube+Video+2" alt="فيديو 2" class="card-img">
+                    <div class="card-content">
+                        <h3 class="card-title">تحدّي البناء</h3>
+                        <p class="card-desc">تحدي بناء بين أفضل اللاعبين في السيرفر، شاهد النتائج المذهلة.</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <img src="https://via.placeholder.com/400x200?text=YouTube+Video+3" alt="فيديو 3" class="card-img">
+                    <div class="card-content">
+                        <h3 class="card-title">مغامرة كهانية</h3>
+                        <p class="card-desc">مغامرة مثيرة في أحد الكهوف العميقة التي تحوي كنوزًا ثمينة.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <img src="https://via.placeholder.com/400x200?text=YouTube+Video+4" alt="فيديو 4" class="card-img">
+                    <div class="card-content">
+                        <h3 class="card-title">بطولة PvP</h3>
+                        <p class="card-desc">بطولة قتال بين اللاعبين، شاهد من سيفوز بالجائزة الكبرى.</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <img src="https://via.placeholder.com/400x200?text=YouTube+Video+5" alt="فيديو 5" class="card-img">
+                    <div class="card-content">
+                        <h3 class="card-title">أسرار السيرفر</h3>
+                        <p class="card-desc">اكتشف معنا الأسرار المخفية والأماكن السرية في السيرفر.</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <img src="https://via.placeholder.com/400x200?text=YouTube+Video+6" alt="فيديو 6" class="card-img">
+                    <div class="card-content">
+                        <h3 class="card-title">تحدي الهروب</h3>
+                        <p class="card-desc">تحدي هروب من السجن، هل ستتمكن من الهروب قبل فوات الأوان؟</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- قسم الإدارة -->
+        <section id="staff" class="content-section">
+            <h2 class="section-title">فريق الإدارة</h2>
+            <p>تعرف على فريق الإدارة المختص الذي يعمل على إدارة السيرفر وتطويره.</p>
+            
+            <div class="cards-container">
+                <div class="card">
+                    <img src="https://via.placeholder.com/400x200?text=Staff+1" alt="عضو إدارة 1" class="card-img">
+                    <div class="card-content">
+                        <h3 class="card-title">المدير العام</h3>
+                        <p class="card-desc">مؤسس السيرفر والمسؤول عن إدارته وتطويره منذ البداية.</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <img src="https://via.placeholder.com/400x200?text=Staff+2" alt="عضو إدارة 2" class="card-img">
+                    <div class="card-content">
+                        <h3 class="card-title">مشرف الخدمة</h3>
+                        <p class="card-desc">يساعد في حل مشاكل اللاعبين ويضمن سير العمل بشكل صحيح.</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <img src="https://via.placeholder.com/400x200?text=Staff+3" alt="عضو إدارة 3" class="card-img">
+                    <div class="card-content">
+                        <h3 class="card-title">مصمم البناء</h3>
+                        <p class="card-desc">مصمم محترف يقوم بإنشاء أروع التصاميم في السيرفر.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <img src="https://via.placeholder.com/400x200?text=Staff+4" alt="عضو إدارة 4" class="card-img">
+                    <div class="card-content">
+                        <h3 class="card-title">مطور البلاغات</h3>
+                        <p class="card-desc">يتابع البلاغات ويحل المشكلات بين اللاعبين بإنصاف.</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <img src="https://via.placeholder.com/400x200?text=Staff+5" alt="عضو إدارة 5" class="card-img">
+                    <div class="card-content">
+                        <h3 class="card-title">منظم الفعاليات</h3>
+                        <p class="card-desc">ينظم الفعاليات والمسابلات الممتعة للاعبين بشكل دوري.</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <img src="https://via.placeholder.com/400x200?text=Staff+6" alt="عضو إدارة 6" class="card-img">
+                    <div class="card-content">
+                        <h3 class="card-title">دعم التقنية</h3>
+                        <p class="card-desc">يساعد اللاعبين في حل المشكلات التقنية التي تواجههم.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // تغيير الأقسام
+        document.querySelectorAll('.menu-items a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // إزالة النشاط من جميع الروابط
+                document.querySelectorAll('.menu-items a').forEach(a => a.classList.remove('active'));
+                // إضافة النشاط للرابط الحالي
+                this.classList.add('active');
+                
+                const sectionId = this.getAttribute('data-section');
+                
+                // إخفاء جميع الأقسام
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // إظهار القسم المحدد
+                document.getElementById(sectionId).classList.add('active');
+                
+                // تحديث عنوان الصفحة
+                document.getElementById('sectionHeader').textContent = this.textContent.trim();
+            });
+        });
+        
+        // نسخ عنوان السيرفر
+        function copyIP() {
+            navigator.clipboard.writeText("mc.example.com")
+                .then(() => {
+                    alert("تم نسخ عنوان السيرفر: mc.example.com");
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+        }
+    </script>
+</body>
+</html>
