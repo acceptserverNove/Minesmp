@@ -568,8 +568,6 @@
       
       <form id="staff-form" onsubmit="submitForm(event, 'staff')">
         <input type="hidden" name="form_type" value="staff">
-        <!-- استبدل البريد الإلكتروني في السطر التالي -->
-        <input type="hidden" name="_redirect" value="https://example.com/lokapv7@gmail.com">
         
         <div class="form-section active" id="staff-section1">
           <div class="form-indicator">المعلومات الأساسية (1/4)</div>
@@ -709,12 +707,8 @@
         <p>املأ النموذج التالي للانضمام إلى فريق الإعلام</p>
       </div>
       
-      <!-- استبدل YOUR_EMAIL_HERE ببريدك الإلكتروني -->
-      <form action="https://formsubmit.co/YOUR_EMAIL_HERE" method="POST">
-        <input type="hidden" name="_captcha" value="false">
-        <input type="hidden" name="_subject" value="طلب جديد للانضمام كـ Media">
-        <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_next" value="https://example.com/thank-you.html">
+      <form onsubmit="submitForm(event, 'media')">
+        <input type="hidden" name="form_type" value="media">
 
         <div class="form-group">
           <label for="media-discord">اسمك في ديسكورد</label>
@@ -752,12 +746,8 @@
         <p>املأ النموذج التالي للانضمام إلى فريق البناء</p>
       </div>
       
-      <!-- استبدل YOUR_EMAIL_HERE ببريدك الإلكتروني -->
-      <form action="https://formsubmit.co/YOUR_EMAIL_HERE" method="POST">
-        <input type="hidden" name="_captcha" value="false">
-        <input type="hidden" name="_subject" value="طلب جديد للانضمام كـ Builder">
-        <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_next" value="https://example.com/thank-you.html">
+      <form onsubmit="submitForm(event, 'builder')">
+        <input type="hidden" name="form_type" value="builder">
         
         <div class="form-group">
           <label for="builder-experience">من كم سنة أو شهر تبني في ماينكرافت؟</label>
