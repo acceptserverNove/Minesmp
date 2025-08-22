@@ -1,739 +1,999 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام طلبات NovamineSMP - الطريقة الجديدة</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #6a11cb;
-            --secondary-color: #2575fc;
-            --accent-color: #ff6b6b;
-            --success-color: #28a745;
-            --warning-color: #ffc107;
-            --danger-color: #dc3545;
-            --light-color: #f8f9fa;
-            --dark-color: #343a40;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Cairo', Arial, sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            color: #333;
-        }
-        
-        .container {
-            width: 100%;
-            max-width: 1000px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            padding: 20px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-        
-        .header {
-            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 25px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .header::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            transform: rotate(30deg);
-        }
-        
-        .header h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .header p {
-            position: relative;
-            z-index: 1;
-        }
-        
-        .request-item {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
-            text-align: right;
-            position: relative;
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .request-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .request-info {
-            flex: 1;
-            text-align: right;
-        }
-        
-        .request-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .status {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-weight: bold;
-            display: inline-block;
-            font-size: 14px;
-        }
-        
-        .status.accepted { 
-            background: #e0f7ea; 
-            color: #28a745; 
-            border-left-color: #28a745;
-        }
-        
-        .status.rejected { 
-            background: #fde8e8; 
-            color: #dc3545; 
-            border-left-color: #dc3545;
-        }
-        
-        .status.pending  { 
-            background: #fff4e0; 
-            color: #ffc107; 
-            border-left-color: #ffc107;
-        }
-        
-        .actions button {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            color: white;
-            font-weight: bold;
-            margin-left: 5px;
-            transition: all 0.2s ease;
-        }
-        
-        .actions button:hover {
-            transform: scale(1.05);
-            opacity: 0.9;
-        }
-        
-        .accept-btn { background: var(--success-color); }
-        .reject-btn { background: var(--danger-color); }
-        .delete-btn { background: var(--dark-color); }
-
-        /* أزرار البداية */
-        #start-box {
-            text-align: center;
-            padding: 20px;
-        }
-        
-        #start-box button {
-            padding: 12px 25px;
-            margin: 10px;
-            background: var(--primary-color);
-            border: none;
-            color: white;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            width: 250px;
-        }
-        
-        #start-box button:hover {
-            background: var(--secondary-color);
-            transform: translateY(-2px);
-        }
-        
-        #login-box { 
-            display: none; 
-            text-align: center;
-            padding: 20px;
-        }
-        
-        #login-box input {
-            padding: 12px;
-            margin: 10px;
-            border-radius: 6px;
-            border: 1px solid #ddd;
-            width: 250px;
-            transition: all 0.3s ease;
-        }
-        
-        #login-box input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.2);
-            outline: none;
-        }
-        
-        #login-box button { 
-            background: var(--primary-color); 
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            width: 250px;
-        }
-        
-        #login-box button:hover {
-            background: var(--secondary-color);
-        }
-
-        /* لوحة الإدارة */
-        #admin-panel {
-            display: none;
-            margin-bottom: 20px;
-            text-align: right;
-            border: 1px solid #ddd;
-            padding: 20px;
-            border-radius: 10px;
-            background: #f8f9fa;
-        }
-        
-        #admin-panel input {
-            padding: 12px;
-            margin: 5px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            width: 250px;
-            transition: all 0.3s ease;
-        }
-        
-        #admin-panel input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.2);
-            outline: none;
-        }
-        
-        #admin-panel button {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            background: var(--primary-color);
-            color: white;
-            transition: all 0.3s ease;
-        }
-        
-        #admin-panel button:hover {
-            background: var(--secondary-color);
-        }
-        
-        .search-box {
-            margin: 20px 0;
-            text-align: center;
-        }
-        
-        .search-box input {
-            padding: 12px;
-            width: 300px;
-            border-radius: 30px;
-            border: 1px solid #ddd;
-            text-align: right;
-            transition: all 0.3s ease;
-        }
-        
-        .search-box input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.2);
-            outline: none;
-        }
-        
-        .filter-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 20px 0;
-        }
-        
-        .filter-buttons button {
-            padding: 8px 15px;
-            border: 1px solid #ddd;
-            background: white;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .filter-buttons button.active {
-            background: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
-        
-        .filter-buttons button:hover {
-            background: var(--primary-color);
-            color: white;
-        }
-        
-        .no-requests {
-            text-align: center;
-            padding: 30px;
-            color: #6c757d;
-        }
-        
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 5px;
-            background: var(--success-color);
-            color: white;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-            z-index: 1000;
-        }
-        
-        .notification.show {
-            transform: translateX(0);
-        }
-        
-        .notification.error {
-            background: var(--danger-color);
-        }
-        
-        .player-notification {
-            background: #e9ecef;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 15px 0;
-            text-align: right;
-            display: none;
-        }
-        
-        .player-notification h3 {
-            color: var(--primary-color);
-            margin-bottom: 10px;
-        }
-        
-        .notification-code {
-            background: white;
-            padding: 10px;
-            border-radius: 5px;
-            font-family: monospace;
-            font-size: 18px;
-            letter-spacing: 2px;
-            margin: 10px 0;
-            direction: ltr;
-            text-align: center;
-        }
-        
-        .copy-btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        
-        @media (max-width: 768px) {
-            .request-item {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .request-actions {
-                margin-top: 15px;
-                width: 100%;
-                justify-content: space-between;
-            }
-            
-            .search-box input {
-                width: 100%;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>طلبات الإنضمام - NovamineSMP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #870790;
+      --primary-dark: #870790;
+      --secondary-color: #2c3e50;
+      --light-color: #f4f4f4;
+      --success-color: #28a745;
+      --warning-color: #ffc107;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: "Cairo", Arial, sans-serif;
+      background: linear-gradient(135deg, #f4f4f4 0%, #e2e2e2 100%);
+      margin: 0;
+      display: flex;
+      min-height: 100vh;
+      color: #333;
+    }
+    
+    /* الشريط الجانبي */
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(to bottom, var(--primary-color), var(--primary-dark));
+      color: #fff;
+      padding: 25px 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      z-index: 10;
+      position: relative;
+      overflow-y: auto;
+    }
+    
+    .logo {
+      text-align: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .logo h1 {
+      font-size: 24px;
+      margin: 0;
+    }
+    
+    .logo p {
+      font-size: 14px;
+      opacity: 0.8;
+      margin-top: 5px;
+    }
+    
+    .sidebar button {
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--primary-color);
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: all 0.3s;
+      width: 100%;
+      text-align: right;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .sidebar button:hover {
+      background: #fff;
+      transform: translateX(-5px);
+    }
+    
+    .sidebar button i {
+      font-size: 18px;
+    }
+    
+    .server-info {
+      margin-top: auto;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    
+    .server-info h3 {
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    /* منطقة المحتوى */
+    .content {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 30px;
+      overflow-y: auto;
+    }
+    
+    .form-container {
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+      padding: 30px;
+      width: 100%;
+      max-width: 700px;
+      display: none;
+      animation: fadeIn 0.5s ease;
+      position: relative;
+    }
+    
+    .form-container.active {
+      display: block;
+    }
+    
+    .form-header {
+      text-align: center;
+      color: var(--primary-color);
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #eee;
+      position: relative;
+    }
+    
+    .form-header h3 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+    
+    .form-header p {
+      color: #666;
+      font-size: 15px;
+    }
+    
+    .form-header::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 40%;
+      width: 20%;
+      height: 3px;
+      background: var(--primary-color);
+      border-radius: 3px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--secondary-color);
+    }
+    
+    .form-container input,
+    .form-container textarea,
+    .form-container select {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: "Cairo", sans-serif;
+      transition: all 0.3s;
+    }
+    
+    .form-container input:focus,
+    .form-container textarea:focus,
+    .form-container select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(190, 22, 34, 0.2);
+    }
+    
+    .form-container textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    .submit-btn {
+      background: linear-gradient(to right, var(--primary-color), var(--primary-dark));
+      color: #fff;
+      padding: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 17px;
+      font-weight: bold;
+      transition: all 0.3s;
+      margin-top: 15px;
+      box-shadow: 0 3px 7px rgba(190, 22, 34, 0.3);
+    }
+    
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 12px rgba(190, 22, 34, 0.4);
+    }
+    
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+    
+    .progress-bar {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 25px;
+      position: relative;
+    }
+    
+    .progress-step {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background: #eee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #777;
+      z-index: 2;
+    }
+    
+    .progress-step.active {
+      background: var(--primary-color);
+      color: white;
+    }
+    
+    .progress-step.completed {
+      background: var(--success-color);
+      color: white;
+    }
+    
+    .progress-bar::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #eee;
+      transform: translateY(-50%);
+      z-index: 1;
+    }
+    
+    .form-section {
+      display: none;
+    }
+    
+    .form-section.active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+    
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 25px;
+    }
+    
+    .nav-btn {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    
+    .prev-btn {
+      background: #f0f0f0;
+      color: #333;
+    }
+    
+    .prev-btn:hover {
+      background: #e0e0e0;
+    }
+    
+    .next-btn {
+      background: var(--primary-color);
+      color: white;
+    }
+    
+    .next-btn:hover {
+      background: var(--primary-dark);
+    }
+    
+    .form-indicator {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: #666;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .success-message {
+      display: none;
+      text-align: center;
+      padding: 30px;
+      background: #f9f9f9;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+    
+    .success-message i {
+      font-size: 60px;
+      color: var(--success-color);
+      margin-bottom: 20px;
+    }
+    
+    .success-message h3 {
+      color: var(--success-color);
+      margin-bottom: 15px;
+    }
+    
+    /* تصميم صفحة التقديمات */
+    .submissions-container {
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+      padding: 30px;
+      width: 100%;
+      max-width: 900px;
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    .submissions-container.active {
+      display: block;
+    }
+    
+    .submission-card {
+      background: #f9f9f9;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .submission-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .submission-type {
+      background: var(--primary-color);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 14px;
+    }
+    
+    .submission-date {
+      color: #777;
+      font-size: 14px;
+    }
+    
+    .submission-details {
+      margin-bottom: 15px;
+    }
+    
+    .submission-details p {
+      margin-bottom: 8px;
+    }
+    
+    .comments-section {
+      margin-top: 20px;
+    }
+    
+    .comments-list {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-bottom: 15px;
+      padding: 10px;
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid #eee;
+    }
+    
+    .comment {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .comment:last-child {
+      border-bottom: none;
+    }
+    
+    .comment-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+    
+    .comment-author {
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+    
+    .comment-date {
+      color: #777;
+    }
+    
+    .comment-form textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      resize: vertical;
+      min-height: 80px;
+      margin-bottom: 10px;
+    }
+    
+    .comment-form button {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    
+    /* تصميم متجاوب */
+    @media (max-width: 900px) {
+      body {
+        flex-direction: column;
+      }
+      
+      .sidebar {
+        width: 100%;
+        padding: 15px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+      }
+      
+      .logo {
+        width: 100%;
+        margin-bottom: 15px;
+      }
+      
+      .sidebar button {
+        width: auto;
+        flex: 1;
+        min-width: 120px;
+        font-size: 14px;
+      }
+      
+      .server-info {
+        display: none;
+      }
+      
+      .content {
+        padding: 20px;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      .sidebar {
+        flex-direction: column;
+      }
+      
+      .sidebar button {
+        width: 100%;
+      }
+      
+      .form-container {
+        padding: 20px;
+      }
+      
+      .submissions-container {
+        padding: 20px;
+      }
+      
+      .submission-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <!-- شاشة البداية -->
-        <div id="start-box">
-            <div class="header">
-                <h1><i class="fas fa-users-cog"></i> نظام طلبات NovamineSMP</h1>
-                <p>الطريقة الجديدة - نظام الرموز الفريدة</p>
-            </div>
-            <h2>أهلاً بك 👋</h2>
-            <p>اختر طريقة الدخول:</p>
-            <button onclick="enterAsGuest()"><i class="fas fa-eye"></i> دخول كضيف (عرض فقط)</button>
-            <button onclick="showLogin()"><i class="fas fa-key"></i> دخول كمدير</button>
+  <!-- القائمة -->
+  <div class="sidebar">
+    <div class="logo">
+      <img src="novaminesmp.png" width="100" height="100">
+      <h1>NovamineSMP Server</h1>
+      <p>نظام طلبات الانضمام</p>
+    </div>
+    
+    <button onclick="showForm('staff')">
+      <span>طلب Staff</span>
+      <i class="fas fa-users-cog"></i>
+    </button>
+    
+    <button onclick="showForm('media')">
+      <span>طلب youtube</span>
+      <i class="fas fa-video"></i>
+    </button>
+    
+    <button onclick="showForm('builder')">
+      <span>طلب Builder</span>
+      <i class="fas fa-hammer"></i>
+    </button>
+    
+    <!-- زر جديد لعرض التقديمات -->
+    <button onclick="showForm('submissions')">
+      <span>عرض التقديمات</span>
+      <i class="fas fa-list"></i>
+    </button>
+    
+    <div class="server-info">
+      <h3><i class="fas fa-server"></i> معلومات السيرفر</h3>
+      <p>IP: NovaMineSMP.aternos.me</p>
+      <p>الإصدار: 1.9.x - 1.21.9</p>
+    </div>
+  </div>
+
+  <!-- المحتوى -->
+  <div class="content">
+    <!-- نموذج Staff -->
+    <div class="form-container" id="staff">
+      <div class="form-header">
+        <h3>📋 طلب الإنضمام إلى طاقم الإدارة </h3>
+        <p>املأ النموذج التالي بعناية للانضمام إلى فريق الإدارة</p>
+      </div>
+      
+      <div class="progress-bar">
+        <div class="progress-step active" id="step1">1</div>
+        <div class="progress-step" id="step2">2</div>
+        <div class="progress-step" id="step3">3</div>
+        <div class="progress-step" id="step4">4</div>
+      </div>
+      
+      <form id="staff-form" onsubmit="submitForm(event, 'staff')">
+        <input type="hidden" name="form_type" value="staff">
+        
+        <div class="form-section active" id="staff-section1">
+          <div class="form-indicator">المعلومات الأساسية (1/4)</div>
+          
+          <div class="form-group">
+            <label for="discord-name">اسمك في ديسكورد</label>
+            <input type="text" id="discord-name" name="discord_name" placeholder="اكتب اسمك في ديسكورد" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="minecraft-name">اسمك في ماينكرافت</label>
+            <input type="text" id="minecraft-name" name="minecraft_name" placeholder="اكتب اسمك في ماينكرافت" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="age">كم عمرك؟</label>
+            <input type="number" id="age" name="age" min="10" max="60" placeholder="أدخل عمرك" required>
+          </div>
+
+          <div class="form-group">
+            <label for="report-action">اذا احد سوا /report لشخص انت شنو راح تسوي</label>
+            <input type="text" id="report-action" name="report_action" placeholder="اشرح كيف ستتعامل مع البلاغ" required>
+          </div>
+
+          <div class="form-group">
+            <label for="rank-request">اذا احد طلب منك رتبه راح تعطيه او لا</label>
+            <input type="text" id="rank-request" name="rank_request" placeholder="اشرح موقفك من طلبات الرتب" required>
+          </div>
+          
+          <button type="button" class="next-btn nav-btn" onclick="nextSection('staff', 2)">التالي <i class="fas fa-arrow-left"></i></button>
         </div>
+        
+        <div class="form-section" id="staff-section2">
+          <div class="form-indicator">الخبرة والوقت (2/4)</div>
+          
+          <div class="form-group">
+            <label for="play-week">كم ساعة تلعب في الأسبوع؟</label>
+            <input type="text" id="play-week" name="play_week" placeholder="عدد الساعات في الأسبوع" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="play-day">كم ساعة تلعب في اليوم؟</label>
+            <input type="text" id="play-day" name="play_day" placeholder="عدد الساعات في اليوم" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="admin-experience">هل أنت حالياً أدمن في سيرفر آخر؟</label>
+            <select id="admin-experience" name="admin_experience" required>
+              <option value="">اختر الإجابة</option>
+              <option value="نعم">نعم</option>
+              <option value="لا">لا</option>
+            </select>
+          </div>
 
-        <!-- تسجيل الدخول للمدير -->
-        <div id="login-box">
-            <div class="header">
-                <h1><i class="fas fa-users-cog"></i> نظام طلبات NovamineSMP</h1>
-                <p>تسجيل دخول المدير</p>
-            </div>
-            <input type="password" id="password" placeholder="كلمة السر">
-            <br>
-            <button onclick="login()"><i class="fas fa-sign-in-alt"></i> دخول</button>
-            <button onclick="backToStart()"><i class="fas fa-arrow-right"></i> رجوع</button>
-            <p id="error" style="color:red; display:none; margin-top: 15px;">
-                <i class="fas fa-exclamation-circle"></i> كلمة السر غير صحيحة!
-            </p>
+          <div class="form-group">
+            <label for="violation-example">اذكر مثال على مخالفة بسيطة ومخالفة كبيرة.</label>
+            <input type="text" id="violation-example" name="violation_example" placeholder="اذكر مثال على مخالفة بسيطة ومخالفة كبيرة." required>
+          </div>
+          
+          <div class="nav-buttons">
+            <button type="button" class="prev-btn nav-btn" onclick="prevSection('staff', 1)"><i class="fas fa-arrow-right"></i> السابق</button>
+            <button type="button" class="next-btn nav-btn" onclick="nextSection('staff', 3)">التالي <i class="fas fa-arrow-left"></i></button>
+          </div>
         </div>
+        
+        <div class="form-section" id="staff-section3">
+          <div class="form-indicator">السيناريوهات الإدارية (3/4)</div>
+          
+          <div class="form-group">
+            <label for="spam-action">إذا أحد سوا سبام، شنو راح تسوي؟</label>
+            <textarea id="spam-action" name="spam_action" placeholder="اشرح كيف ستتعامل مع هذه المشكلة" required></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="inappropriate-action">كيف ستتعامل مع لاعب يبني أشياء غير لائقة داخل اللعبة؟</label>
+            <textarea id="inappropriate-action" name="inappropriate_action" placeholder="اشرح كيف ستتعامل مع هذه المشكلة" required></textarea>
+          </div>
+          
 
-        <!-- المحتوى الأساسي -->
-        <div id="main-content" style="display:none;">
-            <div class="header">
-                <h1><i class="fas fa-users-cog"></i> نظام طلبات NovamineSMP</h1>
-                <p id="role"></p>
-                <button onclick="logout()" style="position: absolute; left: 20px; top: 20px; background: rgba(255,255,255,0.2); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">
-                    <i class="fas fa-sign-out-alt"></i> خروج
-                </button>
-            </div>
+          <div class="form-group">
+            <label for="xray-action">اذا شكيت احد يستعمل XRAY كم يوم راح تبنده</label>
+            <textarea id="xray-action" name="xray_action" placeholder="اشرح كيف ستتعامل مع هذه المشكلة" required></textarea>
+          </div>
 
-            <!-- لوحة الإدارة (للمدير فقط) -->
-            <div id="admin-panel">
-                <h3><i class="fas fa-cogs"></i> لوحة الإدارة</h3>
-                <input type="text" id="playerName" placeholder="اسم اللاعب الجديد">
-                <button onclick="addRequest()"><i class="fas fa-plus"></i> إضافة طلب</button>
-            </div>
+          <div class="form-group">
+            <label for="link-action">قام أحد اللاعبين بنشر رابط ضار أو غير واضح في المحادثة، كيف ستتصرف؟</label>
+            <textarea id="link-action" name="link_action" placeholder="اشرح كيف ستتعامل مع هذه المشكلة" required></textarea>
+          </div>
 
-            <!-- إشعار اللاعب -->
-            <div class="player-notification" id="playerNotification">
-                <h3><i class="fas fa-check-circle"></i> تم قبول طلب اللاعب</h3>
-                <p>يمكنك الآن إرسال رمز القبول التالي للاعب:</p>
-                <div class="notification-code" id="notificationCode">NVSMP-XXXX-XXXX</div>
-                <button class="copy-btn" onclick="copyCode()"><i class="fas fa-copy"></i> نسخ الرمز</button>
-                <p style="margin-top: 10px; font-size: 14px; color: #6c757d;">
-                    يمكن للاعب استخدام هذا الرمز للانضمام إلى السيرفر.
-                </p>
-            </div>
+          <div class="form-group">
+            <label for="hack-action">اذا شفت واحد شغل هاك مو xray يعني مثل fly speed killaura كم يوم راح تبنده </label>
+            <textarea id="hack-action" name="hack_action" placeholder="اشرح كيف ستتعامل مع هذه المشكلة" required></textarea>
+          </div>
 
-            <!-- صندوق البحث والتصفية -->
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="ابحث عن طلب..." onkeyup="filterRequests()">
-            </div>
-            
-            <div class="filter-buttons">
-                <button class="active" onclick="changeFilter('all')">جميع الطلبات</button>
-                <button onclick="changeFilter('pending')">قيد المراجعة</button>
-                <button onclick="changeFilter('accepted')">مقبولة</button>
-                <button onclick="changeFilter('rejected')">مرفوضة</button>
-            </div>
-
-            <div id="requests-list">
-                <!-- الطلبات سيتم عرضها هنا -->
-            </div>
+          
+          <div class="nav-buttons">
+            <button type="button" class="prev-btn nav-btn" onclick="prevSection('staff', 2)"><i class="fas fa-arrow-right"></i> السابق</button>
+            <button type="button" class="next-btn nav-btn" onclick="nextSection('staff', 4)">التالي <i class="fas fa-arrow-left"></i></button>
+          </div>
         </div>
+        
+        <div class="form-section" id="staff-section4">
+          <div class="form-indicator">أسئلة إدارية (4/4)</div>
+          
+          <div class="form-group">
+            <label for="server-problem">إذا صارت مشكلة بالسيرفر، انت شنو راح تسوي؟</label>
+            <textarea id="server-problem" name="server_problem" placeholder="اشرح كيف ستتعامل مع هذه المشكلة" required></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="wrong-order">لو أعطاك أدمن أمر وانت تشوفه غلط، وش تسوي؟</label>
+            <textarea id="wrong-order" name="wrong_order" placeholder="اشرح كيف ستتعامل مع هذه المشكلة" required></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="rules-importance">برأيك، ليش القوانين مهمة في السيرفر؟</label>
+            <textarea id="rules-importance" name="rules_importance" placeholder="اشرح أهمية القوانين في السيرفر" required></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="preference">هل تفضل تنظيم مسابقات أو مراقبة الشات؟ ولماذا؟</label>
+            <textarea id="preference" name="preference" placeholder="اذكر تفضيلك وسبب ذلك" required></textarea>
+          </div>
+          
+          <div class="nav-buttons">
+            <button type="button" class="prev-btn nav-btn" onclick="prevSection('staff', 3)"><i class="fas fa-arrow-right"></i> السابق</button>
+            <button type="submit" class="submit-btn">إرسال الطلب <i class="fas fa-paper-plane"></i></button>
+          </div>
+        </div>
+      </form>
     </div>
 
-    <div class="notification" id="notification">تمت العملية بنجاح!</div>
+    <!-- نموذج Media -->
+    <div class="form-container" id="media">
+      <div class="form-header">
+        <h3>🎥 طلب الإنضمام لفريق youtube</h3>
+        <p>املأ النموذج التالي للانضمام إلى فريق الإعلام</p>
+      </div>
+      
+      <form onsubmit="submitForm(event, 'media')">
+        <input type="hidden" name="form_type" value="media">
 
-    <script>
-        const ADMIN_PASSWORD = "1357911"; // كلمة السر الافتراضية
-        let isAdmin = false;
-        let currentFilter = 'all';
-        let requests = [
-            {name: "Ahmad", status: "pending", date: "2023-05-15", code: ""},
-            {name: "Ali", status: "pending", date: "2023-05-16", code: ""},
-            {name: "Mohammed", status: "accepted", date: "2023-05-10", code: "NVSMP-7B92-4C3A"},
-            {name: "Sara", status: "rejected", date: "2023-05-12", code: ""}
-        ];
+        <div class="form-group">
+          <label for="media-discord">اسمك في ديسكورد</label>
+          <input type="text" id="media-discord" name="discord_name" placeholder="اسمك في ديسكورد" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="media-minecraft">اسمك في ماينكرافت</label>
+          <input type="text" id="media-minecraft" name="minecraft_name" placeholder="اسمك في ماينكرافت" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="media-channel">رابط قناتك (يوتيوب/تيك توك...)</label>
+          <input type="url" id="media-channel" name="channel" placeholder="https://youtube.com/..." required>
+        </div>
+        
+        <div class="form-group">
+          <label for="media-followers">كم عدد المتابعين عندك؟</label>
+          <textarea id="media-followers" name="followers" placeholder="اذكر عدد المتابعين في كل منصة" required></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="media-reason">ليش حاب تنضم كـ Media في السيرفر؟</label>
+          <textarea id="media-reason" name="reason" placeholder="اشرح أسباب رغبتك في الانضمام لفريق Media" required></textarea>
+        </div>
+        
+        <button type="submit" class="submit-btn">إرسال الطلب <i class="fas fa-paper-plane"></i></button>
+      </form>
+    </div>
 
-        // تهيئة الصفحة عند التحميل
-        function init() {
-            // تحميل البيانات من localStorage إذا وجدت
-            const savedRequests = localStorage.getItem('novamine-requests');
-            if (savedRequests) {
-                requests = JSON.parse(savedRequests);
-            }
-            
-            renderRequests();
-        }
+    <!-- نموذج Builder -->
+    <div class="form-container" id="builder">
+      <div class="form-header">
+        <h3>🏗️ طلب الإنضمام كـ Builder</h3>
+        <p>املأ النموذج التالي للانضمام إلى فريق البناء</p>
+      </div>
+      
+      <form onsubmit="submitForm(event, 'builder')">
+        <input type="hidden" name="form_type" value="builder">
+        
+        <div class="form-group">
+          <label for="builder-experience">من كم سنة أو شهر تبني في ماينكرافت؟</label>
+          <input type="text" id="builder-experience" name="experience_years" placeholder="من كم سنة أو شهر تبني في ماينكرافت؟" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="builder-style">أي أسلوب بناء تفضله (حديث، فانتازي، ميديفال، ريفي؟)</label>
+          <textarea id="builder-style" name="building_style" placeholder="اذكر أسلوب البناء المفضل لديك" required></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="builder-portfolio">رابط صور/فيديوهات لأعمالك (لو موجود)</label>
+          <textarea id="builder-portfolio" name="portfolio" placeholder="ضع روابط لأعمالك السابقة"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="builder-imagination">هل تقدر تبني من خيالك أم تحتاج صورة ؟</label>
+          <textarea id="builder-imagination" name="imagination" placeholder="هل تقدر تبني من خيالك أم تحتاج صورة ؟" required></textarea>
+        </div>
 
-        // حفظ البيانات في localStorage
-        function saveRequests() {
-            localStorage.setItem('novamine-requests', JSON.stringify(requests));
-        }
+        <div class="form-group">
+          <label for="builder-discord">اسمك في ديسكورد</label>
+          <input type="text" id="builder-discord" name="discord_name" placeholder="اسمك في ديسكورد" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="builder-minecraft">اسمك في ماينكرافت</label>
+          <input type="text" id="builder-minecraft" name="minecraft_name" placeholder="اسمك في ماينكرافت" required>
+        </div>
 
-        // عرض الإشعارات
-        function showNotification(message, isError = false) {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.classList.add('show');
-            if (isError) {
-                notification.classList.add('error');
-            } else {
-                notification.classList.remove('error');
-            }
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        }
+        <button type="submit" class="submit-btn">إرسال الطلب <i class="fas fa-paper-plane"></i></button>
+      </form>
+    </div>
+    
+    <!-- صفحة عرض التقديمات -->
+    <div class="submissions-container" id="submissions">
+      <div class="form-header">
+        <h3>📋 التقديمات المرسلة</h3>
+        <p>عرض جميع التقديمات والتعليقات عليها</p>
+      </div>
+      
+      <div id="submissions-list">
+        <!-- سيتم ملء هذا القسم بالبيانات من localStorage -->
+      </div>
+    </div>
+  </div>
 
-        // إنشاء رمز فريد
-        function generateUniqueCode() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let code = 'NVSMP-';
-            for (let i = 0; i < 8; i++) {
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
-                if (i === 3) code += '-';
-            }
-            return code;
-        }
-
-        // عرض رمز القبول للاعب
-        function showPlayerCode(playerName, code) {
-            const notificationDiv = document.getElementById('playerNotification');
-            const codeDiv = document.getElementById('notificationCode');
-            
-            codeDiv.textContent = code;
-            notificationDiv.style.display = 'block';
-            
-            // تمرير المعلومات للوظائف الأخرى إذا لزم الأمر
-            window.currentPlayerCode = code;
-            window.currentPlayerName = playerName;
-        }
-
-        // نسخ الرمز
-        function copyCode() {
-            const code = document.getElementById('notificationCode').textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                showNotification("تم نسخ الرمز: " + code);
-            });
-        }
-
-        // عرض الطلبات
-        function renderRequests() {
-            const container = document.getElementById("requests-list");
-            container.innerHTML = "";
-            
-            // تصفية الطلبات حسب البحث والنوع
-            let filteredRequests = requests;
-            
-            // التصفية حسب النوع
-            if (currentFilter !== 'all') {
-                filteredRequests = filteredRequests.filter(req => req.status === currentFilter);
-            }
-            
-            // التصفية حسب البحث
-            const searchText = document.getElementById("searchInput").value.toLowerCase();
-            if (searchText) {
-                filteredRequests = filteredRequests.filter(req => 
-                    req.name.toLowerCase().includes(searchText)
-                );
-            }
-            
-            // إذا لم يكن هناك طلبات
-            if (filteredRequests.length === 0) {
-                container.innerHTML = `
-                    <div class="no-requests">
-                        <i class="fas fa-inbox" style="font-size: 50px; margin-bottom: 15px;"></i>
-                        <h3>لا توجد طلبات</h3>
-                        <p>لم يتم العثور على أي طلبات تناسب معايير البحث</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            // عرض الطلبات
-            filteredRequests.forEach((req, index) => {
-                const originalIndex = requests.findIndex(r => r.name === req.name && r.status === req.status);
-                const div = document.createElement("div");
-                div.className = "request-item";
-                
-                let codeInfo = "";
-                if (req.status === "accepted" && req.code) {
-                    codeInfo = `<p style="color: #28a745; margin-top: 5px;"><small>رمز الدخول: ${req.code}</small></p>`;
-                }
-                
-                div.innerHTML = `
-                    <div class="request-info">
-                        <h3>${req.name}</h3>
-                        <p>تاريخ الطلب: ${req.date}</p>
-                        ${codeInfo}
-                    </div>
-                    <span class="status ${req.status}">${statusText(req.status)}</span>
-                    <div class="request-actions">
-                        ${isAdmin ? `
-                            <button class="accept-btn" onclick="acceptRequest(${originalIndex})"><i class="fas fa-check"></i> قبول</button>
-                            <button class="reject-btn" onclick="changeStatus(${originalIndex},'rejected')"><i class="fas fa-times"></i> رفض</button>
-                            <button class="delete-btn" onclick="deleteRequest(${originalIndex})"><i class="fas fa-trash"></i> حذف</button>
-                        ` : ''}
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function statusText(st) {
-            if (st === "accepted") return "مقبول";
-            if (st === "rejected") return "مرفوض";
-            return "قيد المراجعة";
-        }
-
-        function showLogin() {
-            document.getElementById("start-box").style.display = "none";
-            document.getElementById("login-box").style.display = "block";
-        }
-
-        function backToStart() {
-            document.getElementById("login-box").style.display = "none";
-            document.getElementById("start-box").style.display = "block";
-            document.getElementById("error").style.display = "none";
-            document.getElementById("password").value = "";
-        }
-
-        function enterAsGuest() {
-            isAdmin = false;
-            document.getElementById("start-box").style.display = "none";
-            document.getElementById("main-content").style.display = "block";
-            document.getElementById("role").innerHTML = "<i class='fas fa-eye'></i> وضع الضيف (عرض فقط)";
-            document.getElementById("admin-panel").style.display = "none";
-            document.getElementById("playerNotification").style.display = "none";
-            renderRequests();
-        }
-
-        function login() {
-            const pass = document.getElementById("password").value;
-            if (pass === ADMIN_PASSWORD) {
-                isAdmin = true;
-                document.getElementById("login-box").style.display = "none";
-                document.getElementById("main-content").style.display = "block";
-                document.getElementById("role").innerHTML = "<i class='fas fa-crown'></i> مدير النظام (صلاحيات كاملة)";
-                document.getElementById("admin-panel").style.display = "block";
-                document.getElementById("playerNotification").style.display = "none";
-                renderRequests();
-                showNotification("تم تسجيل الدخول بنجاح كمدير");
-            } else {
-                document.getElementById("error").style.display = "block";
-                showNotification("كلمة السر غير صحيحة!", true);
-            }
-        }
-
-        function logout() {
-            isAdmin = false;
-            document.getElementById("main-content").style.display = "none";
-            document.getElementById("start-box").style.display = "block";
-            document.getElementById("admin-panel").style.display = "none";
-            document.getElementById("playerNotification").style.display = "none";
-            showNotification("تم تسجيل الخروج بنجاح");
-        }
-
-        // قبول الطلب وإنشاء رمز فريد
-        function acceptRequest(index) {
-            if (!isAdmin) return;
-            
-            const code = generateUniqueCode();
-            requests[index].status = "accepted";
-            requests[index].code = code;
-            
-            saveRequests();
-            renderRequests();
-            showPlayerCode(requests[index].name, code);
-            showNotification(`تم قبول طلب ${requests[index].name} وإنشاء رمز الدخول`);
-        }
-
-        function changeStatus(index, status) {
-            if (!isAdmin) return;
-            requests[index].status = status;
-            if (status !== "accepted") {
-                requests[index].code = "";
-            }
-            saveRequests();
-            renderRequests();
-            document.getElementById("playerNotification").style.display = "none";
-            showNotification(`تم ${status === 'accepted' ? 'قبول' : 'رفض'} طلب ${requests[index].name}`);
-        }
-
-        function deleteRequest(index) {
-            if (!isAdmin) return;
-            const playerName = requests[index].name;
-            requests.splice(index, 1);
-            saveRequests();
-            renderRequests();
-            document.getElementById("playerNotification").style.display = "none";
-            showNotification(`تم حذف طلب ${playerName}`);
-        }
-
-        function addRequest() {
-            if (!isAdmin) return;
-            const nameInput = document.getElementById("playerName");
-            const name = nameInput.value.trim();
-            
-            if (!name) {
-                showNotification("يرجى إدخال اسم اللاعب", true);
-                return;
-            }
-            
-            // التحقق من عدم وجود طلب بنفس الاسم
-            if (requests.some(req => req.name.toLowerCase() === name.toLowerCase())) {
-                showNotification("هذا اللاعب لديه طلب مسبقاً", true);
-                return;
-            }
-            
-            const today = new Date();
-            const dateString = today.toISOString().split('T')[0];
-            
-            requests.push({name: name, status: "pending", date: dateString, code: ""});
-            nameInput.value = "";
-            saveRequests();
-            renderRequests();
-            showNotification(`تم إضافة طلب جديد للاعب ${name}`);
-        }
-
-        function filterRequests() {
-            renderRequests();
-        }
-
-        function changeFilter(filter) {
-            currentFilter = filter;
-            document.querySelectorAll('.filter-buttons button').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            renderRequests();
-        }
-
-        // تهيئة التطبيق عند تحميل الصفحة
-        window.onload = function() {
-            init();
-        };
-    </script>
+  <script>
+    // وظائف التنقل بين النماذج
+    function showForm(id) {
+      document.querySelectorAll('.form-container, .submissions-container').forEach(form => {
+        form.classList.remove('active');
+      });
+      document.getElementById(id).classList.add('active');
+      
+      // إذا كانت صفحة التقديمات، قم بتحميل البيانات
+      if (id === 'submissions') {
+        loadSubmissions();
+      }
+    }
+    
+    // عرض نموذج Staff افتراضياً
+    document.addEventListener('DOMContentLoaded', function() {
+      showForm('staff');
+    });
+    
+    // وظائف التنقل بين الأقسام
+    function nextSection(formType, nextSectionNum) {
+      const currentSection = document.querySelector(`#${formType}-section${nextSectionNum-1}`);
+      const nextSection = document.querySelector(`#${formType}-section${nextSectionNum}`);
+      
+      currentSection.classList.remove('active');
+      nextSection.classList.add('active');
+      
+      // تحديث شريط التقدم
+      document.getElementById(`step${nextSectionNum-1}`).classList.remove('active');
+      document.getElementById(`step${nextSectionNum}`).classList.add('active');
+    }
+    
+    function prevSection(formType, prevSectionNum) {
+      const currentSection = document.querySelector(`#${formType}-section${prevSectionNum+1}`);
+      const prevSection = document.querySelector(`#${formType}-section${prevSectionNum}`);
+      
+      currentSection.classList.remove('active');
+      prevSection.classList.add('active');
+      
+      // تحديث شريط التقدم
+      document.getElementById(`step${prevSectionNum+1}`).classList.remove('active');
+      document.getElementById(`step${prevSectionNum}`).classList.add('active');
+    }
+    
+    // دالة إرسال النموذج
+    function submitForm(event, formType) {
+      event.preventDefault();
+      
+      const formData = new FormData(event.target);
+      const formObject = Object.fromEntries(formData.entries());
+      
+      // إضافة معلومات إضافية
+      formObject.submission_date = new Date().toLocaleString('ar-SA');
+      formObject.status = 'قيد المراجعة';
+      formObject.comments = [];
+      
+      // حفظ البيانات في localStorage
+      saveSubmission(formObject);
+      
+      // إظهار رسالة النجاح
+      alert('تم إرسال طلبك بنجاح! سيتم مراجعته من قبل الإدارة.');
+      
+      // إعادة تعيين النموذج
+      event.target.reset();
+      
+      // العودة إلى النموذج الأول
+      if (formType === 'staff') {
+        document.querySelectorAll('.form-section').forEach(section => {
+          section.classList.remove('active');
+        });
+        document.getElementById('staff-section1').classList.add('active');
+        
+        // إعادة تعيين شريط التقدم
+        document.querySelectorAll('.progress-step').forEach((step, index) => {
+          if (index === 0) {
+            step.classList.add('active');
+          } else {
+            step.classList.remove('active');
+          }
+        });
+      }
+      
+      // التبديل إلى صفحة التقديمات
+      showForm('submissions');
+    }
+    
+    // حفظ التقديم في localStorage
+    function saveSubmission(submission) {
+      let submissions = JSON.parse(localStorage.getItem('submissions')) || [];
+      submission.id = Date.now(); // إضافة معرف فريد
+      submissions.push(submission);
+      localStorage.setItem('submissions', JSON.stringify(submissions));
+    }
+    
+    // تحميل التقديمات من localStorage
+    function loadSubmissions() {
+      const submissions = JSON.parse(localStorage.getItem('submissions')) || [];
+      const submissionsList = document.getElementById('submissions-list');
+      
+      if (submissions.length === 0) {
+        submissionsList.innerHTML = '<p class="text-center">لا توجد تقديمات حتى الآن</p>';
+        return;
+      }
+      
+      submissionsList.innerHTML = '';
+      
+      submissions.forEach(submission => {
+        const submissionCard = document.createElement('div');
+        submissionCard.className = 'submission-card';
+        
+        // إنشاء محتوى البطاقة
+        submissionCard.innerHTML = `
+          <div class="submission-header">
+            <span class="submission-type">${getFormTypeName(submission.form_type)}</span>
+            <span class="submission-date">${submission.submission_date}</span>
+          </div>
+          <div class="submission-details">
+            <p><strong>اسم الديسكورد:</strong> ${submission.discord_name || 'غير متوفر'}</p>
+            <p><strong>اسم الماينكرافت:</strong> ${submission.minecraft_name || 'غير متوفر'}</p>
+            <p><strong>الحالة:</strong> ${submission.status}</p>
+          </div>
+          <div class="comments-section">
+            <h4>التعليقات:</h4>
+            <div class="comments-list" id="comments-${submission.id}">
+              ${renderComments(submission.comments)}
+            </div>
+            <div class="comment-form">
+              <textarea placeholder="أضف تعليقًا..." id="comment-text-${submission.id}"></textarea>
+              <button onclick="addComment(${submission.id})">إضافة تعليق</button>
+            </div>
+          </div>
+        `;
+        
+        submissionsList.appendChild(submissionCard);
+      });
+    }
+    
+    // الحصول على اسم النموذج بالعربية
+    function getFormTypeName(type) {
+      const types = {
+        'staff': 'طاقم الإدارة',
+        'media': 'يوتيوب',
+        'builder': 'باني'
+      };
+      return types[type] || type;
+    }
+    
+    // عرض التعليقات
+    function renderComments(comments) {
+      if (!comments || comments.length === 0) {
+        return '<p>لا توجد تعليقات حتى الآن</p>';
+      }
+      
+      return comments.map(comment => `
+        <div class="comment">
+          <div class="comment-header">
+            <span class="comment-author">${comment.author}</span>
+            <span class="comment-date">${comment.date}</span>
+          </div>
+          <p>${comment.text}</p>
+        </div>
+      `).join('');
+    }
+    
+    // إضافة تعليق جديد
+    function addComment(submissionId) {
+      const commentText = document.getElementById(`comment-text-${submissionId}`).value;
+      
+      if (!commentText.trim()) {
+        alert('يرجى كتابة تعليق');
+        return;
+      }
+      
+      const submissions = JSON.parse(localStorage.getItem('submissions')) || [];
+      const submissionIndex = submissions.findIndex(s => s.id === submissionId);
+      
+      if (submissionIndex === -1) return;
+      
+      if (!submissions[submissionIndex].comments) {
+        submissions[submissionIndex].comments = [];
+      }
+      
+      // إضافة التعليق الجديد
+      submissions[submissionIndex].comments.push({
+        author: 'مسؤول',
+        date: new Date().toLocaleString('ar-SA'),
+        text: commentText
+      });
+      
+      // حفظ التعديلات
+      localStorage.setItem('submissions', JSON.stringify(submissions));
+      
+      // تحديث عرض التعليقات
+      document.getElementById(`comments-${submissionId}`).innerHTML = renderComments(submissions[submissionIndex].comments);
+      
+      // مسح حقل النص
+      document.getElementById(`comment-text-${submissionId}`).value = '';
+    }
+  </script>
 </body>
 </html>
