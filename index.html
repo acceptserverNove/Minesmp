@@ -11,11 +11,13 @@
   <style>
     :root {
       --primary-color: #870790;
-      --primary-dark: #870790;
+      --primary-dark: #6a066e;
       --secondary-color: #2c3e50;
       --light-color: #f4f4f4;
       --success-color: #28a745;
+      --danger-color: #dc3545;
       --warning-color: #ffc107;
+      --info-color: #17a2b8;
     }
     
     * {
@@ -64,6 +66,12 @@
       font-size: 14px;
       opacity: 0.8;
       margin-top: 5px;
+    }
+    
+    .logo img {
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      margin-bottom: 10px;
     }
     
     .sidebar button {
@@ -192,7 +200,7 @@
     .form-container select:focus {
       outline: none;
       border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(190, 22, 34, 0.2);
+      box-shadow: 0 0 0 3px rgba(135, 7, 144, 0.2);
     }
     
     .form-container textarea {
@@ -212,12 +220,12 @@
       font-weight: bold;
       transition: all 0.3s;
       margin-top: 15px;
-      box-shadow: 0 3px 7px rgba(190, 22, 34, 0.3);
+      box-shadow: 0 3px 7px rgba(135, 7, 144, 0.3);
     }
     
     .submit-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 5px 12px rgba(190, 22, 34, 0.4);
+      box-shadow: 0 5px 12px rgba(135, 7, 144, 0.4);
     }
     
     .submit-btn:active {
@@ -321,12 +329,12 @@
     }
     
     .success-message {
-      display: none;
       text-align: center;
       padding: 30px;
       background: #f9f9f9;
       border-radius: 10px;
       margin-top: 20px;
+      display: none;
     }
     
     .success-message i {
@@ -338,118 +346,6 @@
     .success-message h3 {
       color: var(--success-color);
       margin-bottom: 15px;
-    }
-    
-    /* تصميم صفحة التقديمات */
-    .submissions-container {
-      background-color: #fff;
-      border-radius: 12px;
-      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
-      padding: 30px;
-      width: 100%;
-      max-width: 900px;
-      display: none;
-      animation: fadeIn 0.5s ease;
-    }
-    
-    .submissions-container.active {
-      display: block;
-    }
-    
-    .submission-card {
-      background: #f9f9f9;
-      border-radius: 10px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-    
-    .submission-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #eee;
-    }
-    
-    .submission-type {
-      background: var(--primary-color);
-      color: white;
-      padding: 5px 10px;
-      border-radius: 20px;
-      font-size: 14px;
-    }
-    
-    .submission-date {
-      color: #777;
-      font-size: 14px;
-    }
-    
-    .submission-details {
-      margin-bottom: 15px;
-    }
-    
-    .submission-details p {
-      margin-bottom: 8px;
-    }
-    
-    .comments-section {
-      margin-top: 20px;
-    }
-    
-    .comments-list {
-      max-height: 200px;
-      overflow-y: auto;
-      margin-bottom: 15px;
-      padding: 10px;
-      background: #fff;
-      border-radius: 8px;
-      border: 1px solid #eee;
-    }
-    
-    .comment {
-      padding: 10px;
-      border-bottom: 1px solid #eee;
-    }
-    
-    .comment:last-child {
-      border-bottom: none;
-    }
-    
-    .comment-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 5px;
-      font-size: 14px;
-    }
-    
-    .comment-author {
-      font-weight: bold;
-      color: var(--primary-color);
-    }
-    
-    .comment-date {
-      color: #777;
-    }
-    
-    .comment-form textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      resize: vertical;
-      min-height: 80px;
-      margin-bottom: 10px;
-    }
-    
-    .comment-form button {
-      background: var(--primary-color);
-      color: white;
-      border: none;
-      padding: 8px 15px;
-      border-radius: 8px;
-      cursor: pointer;
     }
     
     /* تصميم متجاوب */
@@ -500,16 +396,6 @@
       .form-container {
         padding: 20px;
       }
-      
-      .submissions-container {
-        padding: 20px;
-      }
-      
-      .submission-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-      }
     }
   </style>
 </head>
@@ -517,7 +403,7 @@
   <!-- القائمة -->
   <div class="sidebar">
     <div class="logo">
-      <img src="novaminesmp.png" width="100" height="100">
+      <img src="https://via.placeholder.com/100" width="100" height="100">
       <h1>NovamineSMP Server</h1>
       <p>نظام طلبات الانضمام</p>
     </div>
@@ -535,12 +421,6 @@
     <button onclick="showForm('builder')">
       <span>طلب Builder</span>
       <i class="fas fa-hammer"></i>
-    </button>
-    
-    <!-- زر جديد لعرض التقديمات -->
-    <button onclick="showForm('submissions')">
-      <span>عرض التقديمات</span>
-      <i class="fas fa-list"></i>
     </button>
     
     <div class="server-info">
@@ -566,8 +446,11 @@
         <div class="progress-step" id="step4">4</div>
       </div>
       
-      <form id="staff-form" onsubmit="submitForm(event, 'staff')">
-        <input type="hidden" name="form_type" value="staff">
+      <form id="staff-form" action="https://formsubmit.co/lokapv7@gmail.com" method="POST">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_subject" value="طلب جديد للانضمام كـ Staff - NovamineSMP">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_next" value="https://yourwebsite.com/thank-you.html">
         
         <div class="form-section active" id="staff-section1">
           <div class="form-indicator">المعلومات الأساسية (1/4)</div>
@@ -707,8 +590,11 @@
         <p>املأ النموذج التالي للانضمام إلى فريق الإعلام</p>
       </div>
       
-      <form onsubmit="submitForm(event, 'media')">
-        <input type="hidden" name="form_type" value="media">
+      <form action="https://formsubmit.co/lokapv7@gmail.com" method="POST">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_subject" value="طلب جديد للانضمام كـ Media - NovamineSMP">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_next" value="https://yourwebsite.com/thank-you.html">
 
         <div class="form-group">
           <label for="media-discord">اسمك في ديسكورد</label>
@@ -746,8 +632,11 @@
         <p>املأ النموذج التالي للانضمام إلى فريق البناء</p>
       </div>
       
-      <form onsubmit="submitForm(event, 'builder')">
-        <input type="hidden" name="form_type" value="builder">
+      <form action="https://formsubmit.co/albaraaadel80@gmail.com" method="POST">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_subject" value="طلب جديد للانضمام كـ Builder - NovamineSMP">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_next" value="https://yourwebsite.com/thank-you.html">
         
         <div class="form-group">
           <label for="builder-experience">من كم سنة أو شهر تبني في ماينكرافت؟</label>
@@ -782,37 +671,31 @@
         <button type="submit" class="submit-btn">إرسال الطلب <i class="fas fa-paper-plane"></i></button>
       </form>
     </div>
-    
-    <!-- صفحة عرض التقديمات -->
-    <div class="submissions-container" id="submissions">
-      <div class="form-header">
-        <h3>📋 التقديمات المرسلة</h3>
-        <p>عرض جميع التقديمات والتعليقات عليها</p>
-      </div>
-      
-      <div id="submissions-list">
-        <!-- سيتم ملء هذا القسم بالبيانات من localStorage -->
-      </div>
-    </div>
   </div>
 
   <script>
     // وظائف التنقل بين النماذج
     function showForm(id) {
-      document.querySelectorAll('.form-container, .submissions-container').forEach(form => {
+      document.querySelectorAll('.form-container').forEach(form => {
         form.classList.remove('active');
       });
       document.getElementById(id).classList.add('active');
-      
-      // إذا كانت صفحة التقديمات، قم بتحميل البيانات
-      if (id === 'submissions') {
-        loadSubmissions();
-      }
     }
     
     // عرض نموذج Staff افتراضياً
     document.addEventListener('DOMContentLoaded', function() {
       showForm('staff');
+      
+      // استبدال عناوين البريد الإلكتروني في جميع النماذج
+      const email = prompt("يرجى إدخال بريدك الإلكتروني لاستقبال الطلبات:");
+      if (email) {
+        document.querySelectorAll('form').forEach(form => {
+          form.action = `https://formsubmit.co/${email}`;
+        });
+        alert("تم تعيين بريدك الإلكتروني بنجاح! سيتم إرسال الطلبات إلى: " + email);
+      } else {
+        alert("لم تقم بإدخال بريد إلكتروني، ستعمل النماذج ولكن لن يتم إرسال البيانات إلى أي بريد.");
+      }
     });
     
     // وظائف التنقل بين الأقسام
@@ -838,161 +721,6 @@
       // تحديث شريط التقدم
       document.getElementById(`step${prevSectionNum+1}`).classList.remove('active');
       document.getElementById(`step${prevSectionNum}`).classList.add('active');
-    }
-    
-    // دالة إرسال النموذج
-    function submitForm(event, formType) {
-      event.preventDefault();
-      
-      const formData = new FormData(event.target);
-      const formObject = Object.fromEntries(formData.entries());
-      
-      // إضافة معلومات إضافية
-      formObject.submission_date = new Date().toLocaleString('ar-SA');
-      formObject.status = 'قيد المراجعة';
-      formObject.comments = [];
-      
-      // حفظ البيانات في localStorage
-      saveSubmission(formObject);
-      
-      // إظهار رسالة النجاح
-      alert('تم إرسال طلبك بنجاح! سيتم مراجعته من قبل الإدارة.');
-      
-      // إعادة تعيين النموذج
-      event.target.reset();
-      
-      // العودة إلى النموذج الأول
-      if (formType === 'staff') {
-        document.querySelectorAll('.form-section').forEach(section => {
-          section.classList.remove('active');
-        });
-        document.getElementById('staff-section1').classList.add('active');
-        
-        // إعادة تعيين شريط التقدم
-        document.querySelectorAll('.progress-step').forEach((step, index) => {
-          if (index === 0) {
-            step.classList.add('active');
-          } else {
-            step.classList.remove('active');
-          }
-        });
-      }
-      
-      // التبديل إلى صفحة التقديمات
-      showForm('submissions');
-    }
-    
-    // حفظ التقديم في localStorage
-    function saveSubmission(submission) {
-      let submissions = JSON.parse(localStorage.getItem('submissions')) || [];
-      submission.id = Date.now(); // إضافة معرف فريد
-      submissions.push(submission);
-      localStorage.setItem('submissions', JSON.stringify(submissions));
-    }
-    
-    // تحميل التقديمات من localStorage
-    function loadSubmissions() {
-      const submissions = JSON.parse(localStorage.getItem('submissions')) || [];
-      const submissionsList = document.getElementById('submissions-list');
-      
-      if (submissions.length === 0) {
-        submissionsList.innerHTML = '<p class="text-center">لا توجد تقديمات حتى الآن</p>';
-        return;
-      }
-      
-      submissionsList.innerHTML = '';
-      
-      submissions.forEach(submission => {
-        const submissionCard = document.createElement('div');
-        submissionCard.className = 'submission-card';
-        
-        // إنشاء محتوى البطاقة
-        submissionCard.innerHTML = `
-          <div class="submission-header">
-            <span class="submission-type">${getFormTypeName(submission.form_type)}</span>
-            <span class="submission-date">${submission.submission_date}</span>
-          </div>
-          <div class="submission-details">
-            <p><strong>اسم الديسكورد:</strong> ${submission.discord_name || 'غير متوفر'}</p>
-            <p><strong>اسم الماينكرافت:</strong> ${submission.minecraft_name || 'غير متوفر'}</p>
-            <p><strong>الحالة:</strong> ${submission.status}</p>
-          </div>
-          <div class="comments-section">
-            <h4>التعليقات:</h4>
-            <div class="comments-list" id="comments-${submission.id}">
-              ${renderComments(submission.comments)}
-            </div>
-            <div class="comment-form">
-              <textarea placeholder="أضف تعليقًا..." id="comment-text-${submission.id}"></textarea>
-              <button onclick="addComment(${submission.id})">إضافة تعليق</button>
-            </div>
-          </div>
-        `;
-        
-        submissionsList.appendChild(submissionCard);
-      });
-    }
-    
-    // الحصول على اسم النموذج بالعربية
-    function getFormTypeName(type) {
-      const types = {
-        'staff': 'طاقم الإدارة',
-        'media': 'يوتيوب',
-        'builder': 'باني'
-      };
-      return types[type] || type;
-    }
-    
-    // عرض التعليقات
-    function renderComments(comments) {
-      if (!comments || comments.length === 0) {
-        return '<p>لا توجد تعليقات حتى الآن</p>';
-      }
-      
-      return comments.map(comment => `
-        <div class="comment">
-          <div class="comment-header">
-            <span class="comment-author">${comment.author}</span>
-            <span class="comment-date">${comment.date}</span>
-          </div>
-          <p>${comment.text}</p>
-        </div>
-      `).join('');
-    }
-    
-    // إضافة تعليق جديد
-    function addComment(submissionId) {
-      const commentText = document.getElementById(`comment-text-${submissionId}`).value;
-      
-      if (!commentText.trim()) {
-        alert('يرجى كتابة تعليق');
-        return;
-      }
-      
-      const submissions = JSON.parse(localStorage.getItem('submissions')) || [];
-      const submissionIndex = submissions.findIndex(s => s.id === submissionId);
-      
-      if (submissionIndex === -1) return;
-      
-      if (!submissions[submissionIndex].comments) {
-        submissions[submissionIndex].comments = [];
-      }
-      
-      // إضافة التعليق الجديد
-      submissions[submissionIndex].comments.push({
-        author: 'مسؤول',
-        date: new Date().toLocaleString('ar-SA'),
-        text: commentText
-      });
-      
-      // حفظ التعديلات
-      localStorage.setItem('submissions', JSON.stringify(submissions));
-      
-      // تحديث عرض التعليقات
-      document.getElementById(`comments-${submissionId}`).innerHTML = renderComments(submissions[submissionIndex].comments);
-      
-      // مسح حقل النص
-      document.getElementById(`comment-text-${submissionId}`).value = '';
     }
   </script>
 </body>
